@@ -45,20 +45,9 @@ class MathFactsApp:
         self.ps.update_progress(answered_correctly=False)
 
 
-
-penny_settings = {
-    'user': 'penny',
-    'num_probs': 10,
-    'times': [0]}
-
-clemmie_settings = {
-    'user': 'clemmie',
-    'num_probs': 100,
-    'times': [8, 4]}
-
-test_settings = {
-    'user': 'tester',
-    'num_probs': 10,
+user = {
+    'user': 'user',
+    'num_probs': 20,
     'times': [8, 4]}
     
 mfa = MathFactsApp(test_settings)
