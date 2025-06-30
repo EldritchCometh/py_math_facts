@@ -4,9 +4,9 @@ MathFacts is an easy-to-use program to help learn basic math facts. It shows mat
 
 ## How to Use
 
-1. **Download**: Run `git clone https://github.com/EldritchCometh/py_math_facts.git` in your terminal.
-2. **Change Directory**: Run `cd py_math_facts`.
-2. **Run**: Run `python3 app.py`.
+1. **Download**: `git clone https://github.com/EldritchCometh/py_math_facts.git`.
+2. **Change Directory**: `cd py_math_facts`.
+2. **Run**: `python3 app.py`.
 3. **Play**: Solve math problems by typing answers and pressing "Enter." A timer and progress bars show how your child is doing.
 4. **Progress**: The app saves your child’s progress automatically, so they can pick up where they left off.
 
