@@ -1,6 +1,7 @@
 
 import tkinter as tk
 from src.screens.play_screen import PlayScreen
+from src.screens.start_screen import StartScreen
 
 
 
@@ -25,6 +26,22 @@ class MathFactsUI(tk.Tk):
 
         self.screen = None
         self.play_screen = PlayScreen(self)
+        self.start_screen = StartScreen(self)
+
+
+    def set_screen_start(self):
+
+        if self.screen is not None:
+            self.screen._ui_frame.pack_forget()
+
+        self.screen = self.start_screen
+        self.update_idletasks()
+        self.screen.populate()
+        self.screen.resize(self.winfo_width, self.winfo_height)
+        resize = lambda _: \
+            self.screen.resize(self.winfo_width, self.winfo_height)
+        self._bind_with_debounce('<Configure>', resize)
+        self.screen._ui_frame.pack(expand=True, fill="both")
 
 
     def set_screen_play(self):

@@ -12,8 +12,13 @@ class MathFactsApp:
         self.ps = MathFacts(settings)
         self.ui = MathFactsUI(self)
 
-        self.ui.set_screen_play()
+        self.ui.set_screen_start()
         self.ui.mainloop()
+
+
+    def _on_start(self, _):
+
+        self.ui.set_screen_play()
 
 
     def _on_return(self, event):
@@ -25,13 +30,13 @@ class MathFactsApp:
             return
 
         if return_value != self.ps.solution:
-            self.ps.update_progress(answered_correctly=False)
+            self.ps.update_mastery(answered_correctly=False)
             self.ui.play_screen.stop_timer()
             return
 
-        self.ps.update_progress(answered_correctly=True)
-        
-        if self.ps.facts_remaining:
+        self.ps.update_mastery(answered_correctly=True)
+
+        if self.ps.remaining:
             self.ps.set_next()
             self.ui.set_screen_play()
             return
@@ -40,8 +45,8 @@ class MathFactsApp:
 
 
     def _on_timeup(self):
-        
-        self.ps.update_progress(answered_correctly=False)
+
+        self.ps.update_mastery(answered_correctly=False)
 
 
 

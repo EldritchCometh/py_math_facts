@@ -59,8 +59,6 @@ class PlayScreen(tk.Frame):
 
 
     def resize(self, win_width: Callable, win_height: Callable):
-        
-        print(type(win_width), type(win_height))
 
         if not self._widgets:
             return
@@ -73,6 +71,7 @@ class PlayScreen(tk.Frame):
         
 
     def stop_timer(self):
+        
         if 'update_timer' in self._after_ids:
             after_id = self._after_ids.pop('update_timer')
             if after_id is not None:

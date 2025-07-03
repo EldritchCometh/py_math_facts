@@ -1,96 +1,47 @@
 
-import time
 import tkinter as tk
-from tkinter import ttk
-from typing import Dict, List
 import tkinter.font as tkFont
-
+from typing import Dict, List, Callable
 
 
 class StartScreen(tk.Frame):
-    
-
     def __init__(self, ui):
-
         super().__init__()
-        
-        self.app = ui.app
-        self.ps = ui.app.ps
-
-        self._ui_frame = tk.Frame(ui)
-        self._font = tkFont.Font(family="Arial")
-
+        self.app = ui.app  # Reference to MathFactsApp
+        self._ui_frame = tk.Frame(ui)  # Parent frame
+        self._frames: Dict[str, tk.Frame] = {}
+        self._widgets: Dict[str, tk.Widget] = {}
+        self._font = tkFont.Font(family="Arial")  # Font for resizing
+        self._after_ids: Dict[str, str] = {}  # For consistency with PlayScreen
         self._make_layout()
-        self._populate()
+        self.populate()
 
-
-    def _populate(self):
-
-        return
-
-
-    def resize(self, win_width: int, win_height: int):
+    def populate(self):
+        if self._widgets:
+            for widget in self._widgets.values():
+                widget.destroy()
+            self._widgets = {}
         
+        label = tk.Label(self._frames['start_frame'], text="Press Enter to Begin", 
+                        anchor="center", font=self._font)
+        self._widgets['start_label'] = label
+        label.pack(expand=True, fill='both')
+        label.focus_set()
+        label.bind('<Return>', self.app._on_start)
+        label.bind('<KP_Enter>', self.app._on_start)
+
+    def resize(self, win_width: Callable[[], int], win_height: Callable[[], int]):
         if not self._widgets:
             return
-        
-        eq_frame_height = win_height * (1-3/8)
-        width_factor = int(win_width * 0.1) # this will likely change
-        height_factor = int(eq_frame_height * 1) # this will likely change
+        width_factor = int(win_width() * 0.08)
+        height_factor = int(win_height() * 0.3)
         font_size = min(width_factor, height_factor)
         self._font.configure(size=font_size)
-        
-
-    def stop_timer(self):
-        if 'update_timer' in self._after_ids:
-            after_id = self._after_ids.pop('update_timer')
-            if after_id is not None:
-                self._ui_frame.after_cancel(after_id)
-
-
-    def _start_timer(self):
-        
-        self.stop_timer()
-        timer_bar = self._widgets['timer_bar']
-        timer_bar['maximum'] = self.ps.timer_duration
-        timer_bar['value'] = 0
-        self._start_time = time.time()
-
-        if self.ps.timer_duration == 0:
-            return
-
-        def update_timer():
-            elapsed = time.time() - self._start_time
-            timer_bar['value'] = elapsed
-            if elapsed < self.ps.timer_duration:
-                self._after_ids['update_timer'] = \
-                    self._ui_frame.after(10, update_timer)
-            else:
-                timer_bar['value'] = self.ps.timer_duration
-                self.app._on_timeup()
-
-        update_timer()
-
 
     def _make_layout(self):
-
-        frame_names = ['equation_frame', 'timer_frame', 
-                       'progress_frame', 'mastery_frame']
-        row_weights = [8, 1, 1, 1]
-        frame_padys = [(4, 2), (2, 2), (2, 2), (2, 2)]
-        arg_lists = zip(frame_names, row_weights, frame_padys)
+        frame = tk.Frame(self._ui_frame, borderwidth=5, relief='raised')
+        self._frames['start_frame'] = frame
+        self._ui_frame.grid_rowconfigure(0, weight=1)
         self._ui_frame.grid_columnconfigure(0, weight=1)
-        for i, (name, weight, pady) in enumerate(arg_lists):
-            frame = tk.Frame(self._ui_frame, borderwidth=5, relief='raised')
-            self._frames[name] = frame
-            self._ui_frame.grid_rowconfigure(i, weight=weight)    
-            frame.grid(row=i, column=0, sticky="nsew", padx=4, pady=pady)
-            frame.pack_propagate(False)
-            
-        eq_inner_frame = tk.Frame(self._frames['equation_frame'])
-        self._eq_sub_frames = [tk.Frame(eq_inner_frame) for _ in range(5)]
-        eq_inner_frame.grid_rowconfigure(0, weight=1)
-        for i, sf in enumerate(self._eq_sub_frames):
-            eq_inner_frame.grid_columnconfigure(i, weight=1)
-            sf.grid(row=0, column=i, sticky="nsew", padx=2, pady=2)
-        eq_inner_frame.pack(expand=True, fill='both')
+        frame.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
+        frame.pack_propagate(False)

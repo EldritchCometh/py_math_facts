@@ -16,7 +16,7 @@ class MathFactDC:
     operator: str = ''
     solution: int = 0
     difficulty: int = 0
-    progress: int = 0
+    mastery: int = 0
     mastered: bool = False
 
 

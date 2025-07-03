@@ -24,10 +24,11 @@ class MathFacts:
         self._user_path = os.path.join(self._data_path, f'{self._user}.pkl')
 
         self._all_facts: List[MathFactDC] = self._load_data()
+        self._retained_facts: List[MathFactDC] = self._get_retained_facts()
         self._session_facts: List[MathFactDC] = self._get_session_facts()
         self._current_fact: MathFactDC; self.set_next()
 
-        self._prog_updated_flag = False
+        self._mastery_updated_flag = False
 
 
     @property
@@ -43,9 +44,9 @@ class MathFacts:
     
 
     @property
-    def mastry_progress(self) -> int:
+    def mastery(self) -> int:
 
-        return self._current_fact.progress
+        return self._current_fact.mastery
         
 
     @property
@@ -58,8 +59,8 @@ class MathFacts:
     @property
     def percent_mastered(self) -> float:
 
-        mastered = sum(1 for p in self._all_facts if p.mastered)
-        return mastered / len(self._all_facts)
+        mastered = sum(1 for p in self._retained_facts if p.mastered)
+        return mastered / len(self._retained_facts)
 
 
     @property
@@ -67,13 +68,13 @@ class MathFacts:
         
         try:
             times = [0] + self._settings['times']
-            return times[self.mastry_progress]
+            return times[self.mastery]
         except:
             return 0
         
 
     @property
-    def facts_remaining(self) -> int:
+    def remaining(self) -> int:
         
         return len(self._session_facts)
 
@@ -82,49 +83,45 @@ class MathFacts:
         
         self._current_fact = random.choice(self._session_facts)
         self._session_facts.remove(self._current_fact)
-        self._prog_updated_flag = False
+        self._mastery_updated_flag = False
 
 
-    def update_progress(self, answered_correctly: bool) -> None:
+    def update_mastery(self, answered_correctly: bool) -> None:
 
-        if self._prog_updated_flag:
+        if self._mastery_updated_flag:
             return
 
-        prog_threshold = 1 + len(self._settings['times'])
+        threshold = 1 + len(self._settings['times'])
 
-        progress = self._current_fact.progress
-        progress += answered_correctly
-        progress -= (not answered_correctly)
-        progress = max(0, min(prog_threshold, progress))
+        mastery = self._current_fact.mastery
+        mastery += answered_correctly
+        mastery -= (not answered_correctly)
+        mastery = max(0, min(threshold, mastery))
         
-        self._current_fact.progress = progress
-        self._current_fact.mastered = (progress == prog_threshold)
+        self._current_fact.mastery = mastery
+        self._current_fact.mastered = (mastery == threshold)
         
-        self._prog_updated_flag = True
+        self._mastery_updated_flag = True
         self._save_data()
 
 
     def _get_session_facts(self) -> List[MathFactDC]:
 
-        sieved = lambda p: any(x in self._settings['exclude'] for x in p.terms)
-        truncated = [p for p in self._all_facts if not sieved(p)]
-
-        mastered = [p for p in truncated if p.mastered]
+        mastered = [p for p in self._retained_facts if p.mastered]
         n = min(len(mastered), math.floor(self._num_facts * 1/3))
         session_facts = random.sample(mastered, n)
 
-        unmastered = [p for p in truncated if not p.mastered]
+        unmastered = [p for p in self._retained_facts if not p.mastered]
         unmastered.sort(key=lambda p: p.difficulty)
         session_facts.extend(unmastered[:self._num_facts-len(session_facts)])
 
         return session_facts
 
 
-    def _save_data(self) -> None:
-
-        os.makedirs(self._data_path, exist_ok=True)
-        with open(self._user_path, 'wb') as f:
-            pickle.dump(self._all_facts, f)
+    def _get_retained_facts(self) -> List[MathFactDC]:
+    
+        sieved = lambda p: any(x in self._settings['exclude'] for x in p.terms)
+        return [p for p in self._all_facts if not sieved(p)]
 
 
     def _load_data(self) -> List[MathFactDC]:
@@ -134,3 +131,12 @@ class MathFacts:
         
         with open(self._user_path, 'rb') as file:
             return pickle.load(file)
+
+
+    def _save_data(self) -> None:
+
+        os.makedirs(self._data_path, exist_ok=True)
+        with open(self._user_path, 'wb') as f:
+            pickle.dump(self._all_facts, f)
+
+
