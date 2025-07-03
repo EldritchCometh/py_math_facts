@@ -21,6 +21,8 @@ class MathFactsUI(tk.Tk):
         window_height = int(window_width * 0.25)
         self.geometry(f"{window_width}x{window_height}")
 
+        self.after_ids = {}
+
         self.screen = None
         self.play_screen = PlayScreen(self)
 
@@ -33,5 +35,19 @@ class MathFactsUI(tk.Tk):
         self.screen = self.play_screen
         self.update_idletasks()
         self.screen.populate()
-        self.screen.resize(self.winfo_width(), self.winfo_height())
+        self.screen.resize(self.winfo_width, self.winfo_height)
+        resize = lambda _: \
+            self.screen.resize(self.winfo_width, self.winfo_height)
+        self._bind_with_debounce('<Configure>', resize)
         self.screen._ui_frame.pack(expand=True, fill="both")
+
+
+    def _bind_with_debounce(self, event_type, func):
+
+        def handler(event):
+            if func.__name__ in self.after_ids:
+                self.after_cancel(self.after_ids[func.__name__])
+            self.after_ids[func.__name__] = \
+                self.after(100, lambda: func(event))
+            
+        self.bind(event_type, handler)

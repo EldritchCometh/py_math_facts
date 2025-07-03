@@ -2,11 +2,12 @@
 import time
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, List, Callable
+from typing import Dict, List
 import tkinter.font as tkFont
 
 
-class PlayScreen(tk.Frame):
+
+class StartScreen(tk.Frame):
     
 
     def __init__(self, ui):
@@ -17,57 +18,25 @@ class PlayScreen(tk.Frame):
         self.ps = ui.app.ps
 
         self._ui_frame = tk.Frame(ui)
-        self._frames: Dict[str, tk.Frame] = {}
-        self._eq_sub_frames: List[tk.Frame] = []
-        self._widgets: Dict[str, tk.Widget] = {}
         self._font = tkFont.Font(family="Arial")
-        self._after_ids = {}
 
         self._make_layout()
+        self._populate()
 
 
-    def populate(self):
+    def _populate(self):
 
-        if self._widgets:
-            for widget in self._widgets.values():
-                widget.destroy()
-            self._widgets = {}
+        return
+
+
+    def resize(self, win_width: int, win_height: int):
         
-        for i, (t, f) in enumerate(zip(self.ps.equation, self._eq_sub_frames)):
-            if t == '_':
-                widget = tk.Entry(f, width=3, justify='center', font=self._font)
-                self._widgets['entry'] = widget
-                widget.focus_set()
-            else:
-                widget = tk.Label(f, text=t, font=self._font)
-                self._widgets[f'labels_{i}'] = widget
-        
-        prog_bar_names = ['timer', 'progress', 'mastery']
-        values = [0, self.ps.percent_completed, self.ps.percent_mastered]
-        for name, v in zip(prog_bar_names, values):
-            bar = ttk.Progressbar(self._frames[f'{name}_frame'])
-            bar.configure(orient='horizontal', mode='determinate')
-            self._widgets[f'{name}_bar'] = bar
-            bar['maximum'], bar['value'] = 1000, v * 1000
-        
-        self._start_timer()
-        self._widgets['entry'].bind('<Return>', self.app._on_return)
-        self._widgets['entry'].bind('<KP_Enter>', self.app._on_return)
-
-        for widget in self._widgets.values():
-            widget.pack(expand=True, fill='both')
-
-
-    def resize(self, win_width: Callable, win_height: Callable):
-        
-        print(type(win_width), type(win_height))
-
         if not self._widgets:
             return
         
-        eq_frame_height = win_height() * (1-3/8)
-        width_factor = int(win_width() * 0.1)
-        height_factor = int(eq_frame_height * 1)
+        eq_frame_height = win_height * (1-3/8)
+        width_factor = int(win_width * 0.1) # this will likely change
+        height_factor = int(eq_frame_height * 1) # this will likely change
         font_size = min(width_factor, height_factor)
         self._font.configure(size=font_size)
         

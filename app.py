@@ -49,6 +49,6 @@ user_settings = {
     'user': 'user',
     'num_probs': 20,
     'times': [8, 4],
-    'exclude': [0, 1, 2, 3, 4]}
+    'exclude': [0, 1]}
     
 mfa = MathFactsApp(user_settings)
