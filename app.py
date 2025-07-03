@@ -1,5 +1,4 @@
 
-from dataclasses import dataclass
 from src.ui import MathFactsUI
 from src.math_facts import MathFacts
 
@@ -45,9 +44,11 @@ class MathFactsApp:
         self.ps.update_progress(answered_correctly=False)
 
 
-user = {
+
+user_settings = {
     'user': 'user',
     'num_probs': 20,
-    'times': [8, 4]}
+    'times': [8, 4],
+    'exclude': [0, 1, 2, 3, 4]}
     
-mfa = MathFactsApp(test_settings)
+mfa = MathFactsApp(user_settings)

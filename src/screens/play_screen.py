@@ -66,8 +66,8 @@ class PlayScreen(tk.Frame):
             return
         
         eq_frame_height = win_height * (1-3/8)
-        width_factor = int(win_width * 0.072)
-        height_factor = int(eq_frame_height * 0.45)
+        width_factor = int(win_width * 0.1)
+        height_factor = int(eq_frame_height * 1)
         font_size = min(width_factor, height_factor)
         self._font.configure(size=font_size)
         

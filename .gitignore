@@ -1,0 +1,5 @@
+app_data/
+test*
+__pycache__/
+env/
+venv/

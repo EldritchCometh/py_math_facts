@@ -12,6 +12,7 @@ from typing import List
 @dataclass
 class MathFactDC:
     equation: List[str]
+    terms: List[int]
     operator: str = ''
     solution: int = 0
     difficulty: int = 0
@@ -65,7 +66,7 @@ class FactsMaker:
                 continue
             r = int(r)
             eq = [str(t1), op, str(t2), '=', str(r)]
-            mf = MathFactDC(equation=eq, operator=op)
+            mf = MathFactDC(equation=eq, terms=[t1, t2], operator=op)
             pd.append(mf)
 
         return pd

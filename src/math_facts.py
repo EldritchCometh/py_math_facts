@@ -106,11 +106,14 @@ class MathFacts:
 
     def _get_session_facts(self) -> List[MathFactDC]:
 
-        mastered = [p for p in self._all_facts if p.mastered]
+        sieved = lambda p: any(x in self._settings['exclude'] for x in p.terms)
+        truncated = [p for p in self._all_facts if not sieved(p)]
+
+        mastered = [p for p in truncated if p.mastered]
         n = min(len(mastered), math.floor(self._num_facts * 1/3))
         session_facts = random.sample(mastered, n)
 
-        unmastered = [p for p in self._all_facts if not p.mastered]
+        unmastered = [p for p in truncated if not p.mastered]
         unmastered.sort(key=lambda p: p.difficulty)
         session_facts.extend(unmastered[:self._num_facts-len(session_facts)])
 
