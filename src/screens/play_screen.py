@@ -58,17 +58,26 @@ class PlayScreen(tk.Frame):
             widget.pack(expand=True, fill='both')
 
 
-    def resize(self, win_width: Callable, win_height: Callable):
+    def resize(self, win_height: Callable):
 
         if not self._widgets:
             return
         
-        eq_frame_height = win_height() * (1-3/8)
-        width_factor = int(win_width() * 0.1)
-        height_factor = int(eq_frame_height * 1)
-        font_size = min(width_factor, height_factor)
-        self._font.configure(size=font_size)
-        
+        target_height = win_height() * (1-3/8)
+        self._font.configure(size=1)
+
+        low, high = 10, 500
+        while low <= high:
+            print("counter")
+            mid = (low + high) // 2
+            self._font.configure(size=mid)
+            mid_height = self._font.metrics('linespace')
+            if mid_height > target_height:
+                high = mid - 1
+            else:
+                low = mid + 1
+        self._font.configure(size=high)
+            
 
     def stop_timer(self):
         

@@ -30,10 +30,10 @@ class FactsMaker:
         terms = self._get_all_term_combos(biggest_terms)
 
         math_facts = []
-        math_facts.extend(self._make_opr_probs(terms, '+'))
-        math_facts.extend(self._make_opr_probs(terms, '-'))
-        math_facts.extend(self._make_opr_probs(terms, '*'))
-        math_facts.extend(self._make_opr_probs(terms, '/'))
+        math_facts.extend(self._make_opr_facts(terms, '+'))
+        math_facts.extend(self._make_opr_facts(terms, '-'))
+        math_facts.extend(self._make_opr_facts(terms, '*'))
+        math_facts.extend(self._make_opr_facts(terms, '/'))
         math_facts = self._insert_backward_equations(math_facts)
         math_facts = self._insert_unknowns_in_equations(math_facts)
         self._affect_final_touches(math_facts)
@@ -52,8 +52,8 @@ class FactsMaker:
         return list(sorted_terms)
     
 
-    def _make_opr_probs(self, terms, op):
-        
+    def _make_opr_facts(self, terms, op):
+
         opr_map = {'+': add, '-': sub, '*': mul, '/': truediv}
 
         pd = []

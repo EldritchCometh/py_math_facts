@@ -25,37 +25,27 @@ class MathFactsUI(tk.Tk):
         self.after_ids = {}
 
         self.screen = None
-        self.play_screen = PlayScreen(self)
-        self.start_screen = StartScreen(self)
+        self.start_screen = self.create_screen(StartScreen)
+        self.play_screen = self.create_screen(PlayScreen)
 
 
-    def set_screen_start(self):
+    def create_screen(self, screen_class):
 
-        if self.screen is not None:
-            self.screen._ui_frame.pack_forget()
-
-        self.screen = self.start_screen
-        self.update_idletasks()
-        self.screen.populate()
-        self.screen.resize(self.winfo_width, self.winfo_height)
-        resize = lambda _: \
-            self.screen.resize(self.winfo_width, self.winfo_height)
+        screen = screen_class(self)
+        resize = lambda _: screen.resize(self.winfo_height)
         self._bind_with_debounce('<Configure>', resize)
-        self.screen._ui_frame.pack(expand=True, fill="both")
+        return screen
 
 
-    def set_screen_play(self):
+    def set_screen(self, screen):
         
         if self.screen is not None:
             self.screen._ui_frame.pack_forget()
 
-        self.screen = self.play_screen
+        self.screen = screen
         self.update_idletasks()
         self.screen.populate()
-        self.screen.resize(self.winfo_width, self.winfo_height)
-        resize = lambda _: \
-            self.screen.resize(self.winfo_width, self.winfo_height)
-        self._bind_with_debounce('<Configure>', resize)
+        self.screen.resize(self.winfo_height)
         self.screen._ui_frame.pack(expand=True, fill="both")
 
 
@@ -65,6 +55,6 @@ class MathFactsUI(tk.Tk):
             if func.__name__ in self.after_ids:
                 self.after_cancel(self.after_ids[func.__name__])
             self.after_ids[func.__name__] = \
-                self.after(100, lambda: func(event))
+                self.after(10, lambda: func(event))
             
         self.bind(event_type, handler)

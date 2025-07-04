@@ -12,13 +12,13 @@ class MathFactsApp:
         self.ps = MathFacts(settings)
         self.ui = MathFactsUI(self)
 
-        self.ui.set_screen_start()
+        self.ui.set_screen(self.ui.start_screen)
         self.ui.mainloop()
 
 
     def _on_start(self, _):
 
-        self.ui.set_screen_play()
+        self.ui.set_screen(self.ui.play_screen)
 
 
     def _on_return(self, event):
@@ -52,7 +52,7 @@ class MathFactsApp:
 
 user_settings = {
     'user': 'user',
-    'num_probs': 20,
+    'num_probs': 5,
     'times': [8, 4],
     'exclude': [0, 1]}
     
