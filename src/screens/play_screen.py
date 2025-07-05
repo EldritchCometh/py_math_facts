@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Callable
 import tkinter.font as tkFont
+from src.screens.resources.message_widths import MESSAGE_HEIGHTS
 
 
 class PlayScreen(tk.Frame):
@@ -58,17 +59,13 @@ class PlayScreen(tk.Frame):
             widget.pack(expand=True, fill='both')
 
 
-    def resize(self, win_height: Callable):
-
-        if not self._widgets:
-            return
+    def resize(self):
         
         target_height = win_height() * (1-3/8)
         self._font.configure(size=1)
 
         low, high = 10, 500
         while low <= high:
-            print("counter")
             mid = (low + high) // 2
             self._font.configure(size=mid)
             mid_height = self._font.metrics('linespace')

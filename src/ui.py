@@ -32,21 +32,20 @@ class MathFactsUI(tk.Tk):
     def create_screen(self, screen_class):
 
         screen = screen_class(self)
-        resize = lambda _: screen.resize(self.winfo_height)
-        self._bind_with_debounce('<Configure>', resize)
+        self._bind_with_debounce('<Configure>', lambda _: screen.resize)
         return screen
 
 
     def set_screen(self, screen):
-        
+
         if self.screen is not None:
             self.screen._ui_frame.pack_forget()
 
         self.screen = screen
-        self.update_idletasks()
-        self.screen.populate()
-        self.screen.resize(self.winfo_height)
         self.screen._ui_frame.pack(expand=True, fill="both")
+        self.update_idletasks()
+        self.screen.resize()
+        self.screen.populate()
 
 
     def _bind_with_debounce(self, event_type, func):
@@ -55,6 +54,6 @@ class MathFactsUI(tk.Tk):
             if func.__name__ in self.after_ids:
                 self.after_cancel(self.after_ids[func.__name__])
             self.after_ids[func.__name__] = \
-                self.after(10, lambda: func(event))
-            
+                self.after(100, lambda: func(event))
+
         self.bind(event_type, handler)

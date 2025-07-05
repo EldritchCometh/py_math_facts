@@ -38,9 +38,8 @@ class MathFactsApp:
 
         if self.ps.remaining:
             self.ps.set_next()
-            self.ui.set_screen_play()
-            return
-        
+            self.ui.set_screen(self.ui.play_screen)
+
         self.ui.destroy()
 
 
