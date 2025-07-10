@@ -20,6 +20,8 @@ class StartScreen(tk.Frame):
         self._start_message = "Press enter to begin!"
         self._make_layout()
 
+        self.print_lookup_table()
+
 
     def populate(self):
 
@@ -39,17 +41,22 @@ class StartScreen(tk.Frame):
 
 
     def resize(self):
-       
-        ws_dict = START_MESSAGE_WIDTHS.items()
-        hs_dict = MESSAGE_HEIGHTS.items()
 
-        w_target = self._start_message_frame.winfo_width() * 0.9
-        h_target = self._start_message_frame.winfo_height() * 0.9
+        w_target = self._start_message_frame.winfo_width()
+        #h_target = self._start_message_frame.winfo_height()
 
-        w_font = max((k for k, v in ws_dict if v <= w_target))
-        h_font = max((k for k, v in hs_dict if v <= h_target))
+        #print(w_target)
 
-        new_font_size = int(min(w_font, h_font) * 0.85)
+        dpi = self.winfo_fpixels('1i')
+        ws_dict = {k: v * dpi for k, v in START_MESSAGE_WIDTHS.items()}
+        #hs_dict = {k: v * dpi for k, v in MESSAGE_HEIGHTS.items()}
+
+        #print(ws_dict)
+
+        w_font = max((k for k, v in ws_dict.items() if v <= w_target))
+        #h_font = max((k for k, v in hs_dict.items() if v <= h_target))
+
+        new_font_size = int(w_font)
         self._font.configure(size=max(10, new_font_size))
 
 
