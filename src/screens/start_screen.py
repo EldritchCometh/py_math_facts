@@ -2,7 +2,7 @@
 import tkinter as tk
 import tkinter.font as tkFont
 from src.screens.resources.message_widths \
-    import START_MESSAGE_WIDTHS, MESSAGE_HEIGHTS
+    import REFERENCE_DPI, START_MESSAGE_WIDTHS, MESSAGE_HEIGHTS
 
 
 class StartScreen(tk.Frame):
@@ -19,8 +19,6 @@ class StartScreen(tk.Frame):
         self._font = tkFont.Font(family="Arial")
         self._start_message = "Press enter to begin!"
         self._make_layout()
-
-        self.print_lookup_table()
 
 
     def populate(self):
@@ -42,29 +40,37 @@ class StartScreen(tk.Frame):
 
     def resize(self):
 
-        w_target = self._start_message_frame.winfo_width()
-        #h_target = self._start_message_frame.winfo_height()
+        dpi_ratio = self.winfo_fpixels('1i') / REFERENCE_DPI
+        ws_dict = {k: v * dpi_ratio for k, v in START_MESSAGE_WIDTHS.items()}
+        width_target = self._start_message_frame.winfo_width()
 
-        #print(w_target)
-
-        dpi = self.winfo_fpixels('1i')
-        ws_dict = {k: v * dpi for k, v in START_MESSAGE_WIDTHS.items()}
-        #hs_dict = {k: v * dpi for k, v in MESSAGE_HEIGHTS.items()}
-
-        #print(ws_dict)
-
-        w_font = max((k for k, v in ws_dict.items() if v <= w_target))
-        #h_font = max((k for k, v in hs_dict.items() if v <= h_target))
-
+        w_font = max((k for k, v in ws_dict.items() if v <= width_target))
         new_font_size = int(w_font)
         self._font.configure(size=max(10, new_font_size))
 
 
 
 
+    # def resize(self):
 
+    #     w_target = self._start_message_frame.winfo_width()
+    #     #h_target = self._start_message_frame.winfo_height()
 
+    #     #print(w_target)
 
+    #     dpi = self.winfo_fpixels('1i')
+    #     ws_dict = {k: v * dpi for k, v in START_MESSAGE_WIDTHS.items()}
+    #     #hs_dict = {k: v * dpi for k, v in MESSAGE_HEIGHTS.items()}
+
+    #     #print(ws_dict)
+
+    #     w_font = max((k for k, v in ws_dict.items() if v <= w_target))
+    #     #h_font = max((k for k, v in hs_dict.items() if v <= h_target))
+
+    #     w_font = ws_dict[5]
+
+    #     new_font_size = int(w_font)
+    #     self._font.configure(size=max(10, new_font_size))
 
 
 
