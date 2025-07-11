@@ -1,8 +1,6 @@
 
 import tkinter as tk
 import tkinter.font as tkFont
-from src.screens.resources.message_widths \
-    import REFERENCE_DPI, START_MESSAGE_WIDTHS, MESSAGE_HEIGHTS
 
 
 class StartScreen(tk.Frame):
@@ -53,6 +51,10 @@ class StartScreen(tk.Frame):
         new_size = small_font_size + ratio * (large_font_size - small_font_size)
 
         new_size = int((new_size // 20) * 20)
+
+        dpi = self._start_message_frame.winfo_fpixels('1i')
+        new_size = max(10, int(new_size * dpi / 96))
+        
         self._font.configure(size=new_size)
 
 
