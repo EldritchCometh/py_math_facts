@@ -1,7 +1,7 @@
 
 import tkinter as tk
-from src.game.play_screen import PlayScreen
-from src.game.ready_screen import ReadyScreen
+from src.game_ui.play_screen import PlayScreen
+from src.game_ui.ready_screen import ReadyScreen
 
 
 

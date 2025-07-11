@@ -9,15 +9,15 @@ import tkinter.font as tkFont
 class PlayScreen(tk.Frame):
     
 
-    def __init__(self, ui):
+    def __init__(self, gui):
 
         super().__init__()
         
-        self.ui = ui
-        self.app = ui.app
-        self.ps = ui.app.ps
+        self.gui = gui
+        self.app = gui.app
+        self.ps = gui.app.ps
 
-        self._ui_frame = tk.Frame(ui)
+        self._gui_frame = tk.Frame(gui)
         self._frames: Dict[str, tk.Frame] = {}
         self._eq_sub_frames: List[tk.Frame] = []
         self._widgets: Dict[str, tk.Widget] = {}
@@ -63,7 +63,7 @@ class PlayScreen(tk.Frame):
 
     def resize(self):
 
-        new_window_size = (self.ui.winfo_width(), self.ui.winfo_height())
+        new_window_size = (self.gui.winfo_width(), self.gui.winfo_height())
         if new_window_size == self._window_size:
             return
         self._window_size = new_window_size
@@ -81,25 +81,23 @@ class PlayScreen(tk.Frame):
         target_width = self._frames['equation_frame'].winfo_width() / 5
         ratio = (target_width - small_width) / (large_width - small_width)
         w_size = small_font_size + ratio * (large_font_size - small_font_size)
-        w_size *= self.ui.winfo_fpixels('1i') / 96
+        w_size *= self.gui.winfo_fpixels('1i') / 96
         
         target_height = self._frames['equation_frame'].winfo_height()
         ratio = (target_height - small_height) / (large_height - small_height)
         h_size = small_height + ratio * (large_height - small_height)
-        h_size *= self.ui.winfo_fpixels('1i') / 96
+        h_size *= self.gui.winfo_fpixels('1i') / 96
 
         final_size = min(int(w_size), int(h_size))
         self._font.configure(size=final_size)
 
-        # width resize isnt working here
-        
 
     def stop_timer(self):
-        
+
         if 'update_timer' in self._after_ids:
             after_id = self._after_ids.pop('update_timer')
             if after_id is not None:
-                self._ui_frame.after_cancel(after_id)
+                self._gui_frame.after_cancel(after_id)
 
 
     def _start_timer(self):
@@ -118,7 +116,7 @@ class PlayScreen(tk.Frame):
             timer_bar['value'] = elapsed
             if elapsed < self.ps.timer_duration:
                 self._after_ids['update_timer'] = \
-                    self._ui_frame.after(10, update_timer)
+                    self._gui_frame.after(10, update_timer)
             else:
                 timer_bar['value'] = self.ps.timer_duration
                 self.app._on_timeup()
@@ -132,12 +130,12 @@ class PlayScreen(tk.Frame):
                        'progress_frame', 'mastery_frame']
         row_weights = [8, 1, 1, 1]
         frame_padys = [(4, 2), (2, 2), (2, 2), (2, 2)]
+        self._gui_frame.grid_columnconfigure(0, weight=1)
         arg_lists = zip(frame_names, row_weights, frame_padys)
-        self._ui_frame.grid_columnconfigure(0, weight=1)
         for i, (name, weight, pady) in enumerate(arg_lists):
-            frame = tk.Frame(self._ui_frame, borderwidth=5, relief='raised')
+            frame = tk.Frame(self._gui_frame, borderwidth=5, relief='raised')
             self._frames[name] = frame
-            self._ui_frame.grid_rowconfigure(i, weight=weight)    
+            self._gui_frame.grid_rowconfigure(i, weight=weight)    
             frame.grid(row=i, column=0, sticky="nsew", padx=4, pady=pady)
             frame.pack_propagate(False)
             

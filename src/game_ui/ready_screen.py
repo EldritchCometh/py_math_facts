@@ -6,14 +6,14 @@ import tkinter.font as tkFont
 class ReadyScreen(tk.Frame):
 
    
-    def __init__(self, ui):
+    def __init__(self, gui):
 
-        super().__init__(ui)
+        super().__init__(gui)
 
-        self.ui = ui
-        self.app = ui.app
+        self.gui = gui
+        self.app = gui.app
 
-        self._ui_frame = tk.Frame(ui)
+        self._gui_frame = tk.Frame(gui)
         self._start_message_frame: tk.Frame
         self._font = tkFont.Font(family="Arial")
         self._start_message = "Press enter to begin!"
@@ -35,13 +35,13 @@ class ReadyScreen(tk.Frame):
 
     def _make_layout(self):
 
-        self._start_message_frame = tk.Frame(self._ui_frame)
+        self._start_message_frame = tk.Frame(self._gui_frame)
         self._start_message_frame.pack(expand=True, fill='both')
 
 
     def resize(self):
 
-        new_window_size = (self.ui.winfo_width(), self.ui.winfo_height())
+        new_window_size = (self.gui.winfo_width(), self.gui.winfo_height())
         if new_window_size == self._window_size:
             return
         self._window_size = new_window_size
@@ -59,12 +59,12 @@ class ReadyScreen(tk.Frame):
         target_width = self._start_message_frame.winfo_width()
         ratio = (target_width - small_width) / (large_width - small_width)
         w_size = small_font_size + ratio * (large_font_size - small_font_size)
-        w_size *= self.ui.winfo_fpixels('1i') / 96
+        w_size *= self.gui.winfo_fpixels('1i') / 96
 
         target_height = self._start_message_frame.winfo_height()
         ratio = (target_height - small_height) / (large_height - small_height)
         h_size = small_height + ratio * (large_height - small_height)
-        h_size *= self.ui.winfo_fpixels('1i') / 96 * 0.8
+        h_size *= self.gui.winfo_fpixels('1i') / 96 * 0.8
 
         final_size = min(int(w_size), int(h_size))
         self._font.configure(size=final_size)
