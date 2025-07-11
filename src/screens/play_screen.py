@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Callable
 import tkinter.font as tkFont
-from src.screens.resources.message_widths import MESSAGE_HEIGHTS
 
 
 class PlayScreen(tk.Frame):
@@ -14,6 +13,7 @@ class PlayScreen(tk.Frame):
 
         super().__init__()
         
+        self.ui = ui
         self.app = ui.app
         self.ps = ui.app.ps
 
@@ -23,6 +23,8 @@ class PlayScreen(tk.Frame):
         self._widgets: Dict[str, tk.Widget] = {}
         self._font = tkFont.Font(family="Arial")
         self._after_ids = {}
+        
+        self._window_size = (0, 0)
 
         self._make_layout()
 
@@ -60,21 +62,37 @@ class PlayScreen(tk.Frame):
 
 
     def resize(self):
-        
-        target_height = win_height() * (1-3/8)
-        self._font.configure(size=1)
 
-        low, high = 10, 500
-        while low <= high:
-            mid = (low + high) // 2
-            self._font.configure(size=mid)
-            mid_height = self._font.metrics('linespace')
-            if mid_height > target_height:
-                high = mid - 1
-            else:
-                low = mid + 1
-        self._font.configure(size=high)
-            
+        new_window_size = (self.ui.winfo_width(), self.ui.winfo_height())
+        if new_window_size == self._window_size:
+            return
+        self._window_size = new_window_size
+
+        small_font_size = 10
+        small_font = tkFont.Font(family="Arial", size=small_font_size)
+        small_width = small_font.measure("99")
+        small_height = small_font.metrics('linespace')
+        
+        large_font_size = 100
+        large_font = tkFont.Font(family="Arial", size=large_font_size)
+        large_width = large_font.measure("99")
+        large_height = large_font.metrics('linespace')
+
+        target_width = self._frames['equation_frame'].winfo_width() / 5
+        ratio = (target_width - small_width) / (large_width - small_width)
+        w_size = small_font_size + ratio * (large_font_size - small_font_size)
+        w_size *= self.ui.winfo_fpixels('1i') / 96
+        
+        target_height = self._frames['equation_frame'].winfo_height()
+        ratio = (target_height - small_height) / (large_height - small_height)
+        h_size = small_height + ratio * (large_height - small_height)
+        h_size *= self.ui.winfo_fpixels('1i') / 96
+
+        final_size = min(int(w_size), int(h_size))
+        self._font.configure(size=final_size)
+
+        # width resize isnt working here
+        
 
     def stop_timer(self):
         

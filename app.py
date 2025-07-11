@@ -12,7 +12,6 @@ class MathFactsApp:
         self.ps = MathFacts(settings)
         self.ui = MathFactsUI(self)
 
-        self.ui.set_screen(self.ui.start_screen)
         self.ui.mainloop()
 
 
