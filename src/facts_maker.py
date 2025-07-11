@@ -2,10 +2,8 @@
 from dataclasses import dataclass
 from operator import add, sub, mul, truediv
 from itertools import product
-from typing import List, Dict
-from copy import deepcopy
-from dataclasses import dataclass
 from typing import List
+from copy import deepcopy
 
 
 

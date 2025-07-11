@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 
-class StartScreen(tk.Frame):
+class ReadyScreen(tk.Frame):
 
    
     def __init__(self, ui):

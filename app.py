@@ -1,5 +1,6 @@
 
-from src.ui import MathFactsUI
+from src.game.game_ui import GameUI
+from src.menu.menu_ui import MenuUI
 from src.math_facts import MathFacts
 
 
@@ -9,15 +10,17 @@ class MathFactsApp:
 
     def __init__(self, settings: dict):
 
-        self.ps = MathFacts(settings)
-        self.ui = MathFactsUI(self)
+        self.pbs = MathFacts(settings)
+        self.mui = MenuUI()
+        
+        # self.gui = GameUI(self)
+        # self.gui.mainloop()
 
-        self.ui.mainloop()
 
 
     def _on_start(self, _):
 
-        self.ui.set_screen(self.ui.play_screen)
+        self.gui.set_screen(self.gui.play_screen)
 
 
     def _on_return(self, event):

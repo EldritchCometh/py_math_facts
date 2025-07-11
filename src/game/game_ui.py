@@ -1,11 +1,11 @@
 
 import tkinter as tk
-from src.screens.play_screen import PlayScreen
-from src.screens.start_screen import StartScreen
+from src.game.play_screen import PlayScreen
+from src.game.ready_screen import ReadyScreen
 
 
 
-class MathFactsUI(tk.Tk):
+class GameUI(tk.Tk):
 
 
     def __init__(self, app):
@@ -25,9 +25,9 @@ class MathFactsUI(tk.Tk):
         self.after_ids = {}
 
         self.screen = None
-        self.start_screen = self.create_screen(StartScreen)
+        self.ready_screen = self.create_screen(ReadyScreen)
         self.play_screen = self.create_screen(PlayScreen)
-        self.set_screen(self.start_screen)
+        self.set_screen(self.ready_screen)
 
 
     def create_screen(self, screen_class):
