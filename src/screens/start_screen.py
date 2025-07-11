@@ -40,15 +40,40 @@ class StartScreen(tk.Frame):
 
     def resize(self):
 
-        dpi_ratio = self.winfo_fpixels('1i') / REFERENCE_DPI
-        ws_dict = {k: v * dpi_ratio for k, v in START_MESSAGE_WIDTHS.items()}
-        width_target = self._start_message_frame.winfo_width()
+        small_font_size = 10
+        large_font_size = 100
+        
+        small_font = tkFont.Font(family="Arial", size=small_font_size)
+        large_font = tkFont.Font(family="Arial", size=large_font_size)
+        small_width = small_font.measure(self._start_message)
+        large_width = large_font.measure(self._start_message)
+        
+        target_width = self._start_message_frame.winfo_width()
+        ratio = (target_width - small_width) / (large_width - small_width)
+        new_size = small_font_size + ratio * (large_font_size - small_font_size)
 
-        w_font = max((k for k, v in ws_dict.items() if v <= width_target))
-        new_font_size = int(w_font)
-        self._font.configure(size=max(10, new_font_size))
+        new_size = int((new_size // 20) * 20)
+        self._font.configure(size=new_size)
 
 
+    # def resize(self):
+
+    #     width_target = self._start_message_frame.winfo_width() * 0.9
+    #     font_small = tkFont.Font(family="Arial", size=100)
+    #     width_small = font_small.measure(self._start_message)
+    #     if width_small > width_target:
+    #         self._font.configure(size=10)
+    #         return
+    #     font_large = tkFont.Font(family="Arial", size=500)
+    #     width_large = font_large.measure(self._start_message)
+    #     if width_large <= width_target:
+    #         self._font.configure(size=1000)
+    #         return
+    #     # Linear interpolation: size = small + (target - small_width) * (large - small) / (large_width - small_width)
+    #     size = 100 + (width_target - width_small) * (500 - 100) / (width_large - width_small)
+    #     size = int((size // 20) * 20)  # Round to nearest multiple of 20
+    #     print(size)
+    #     self._font.configure(size=size)
 
 
     # def resize(self):
