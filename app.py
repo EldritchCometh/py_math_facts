@@ -38,6 +38,7 @@ class MathFactsApp:
         if self.ps.remaining:
             self.ps.set_next()
             self.ui.set_screen(self.ui.play_screen)
+            return
 
         self.ui.destroy()
 
@@ -50,8 +51,8 @@ class MathFactsApp:
 
 user_settings = {
     'user': 'user',
-    'num_probs': 5,
+    'num_probs': 20,
     'times': [8, 4],
-    'exclude': [0, 1]}
+    'exclude': []}
     
 mfa = MathFactsApp(user_settings)
