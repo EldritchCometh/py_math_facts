@@ -1,6 +1,6 @@
 
-from src.game_ui.game_ui import GameUI
-from src.menu_ui.menu_ui import MenuUI
+from src.game_ui import GameUI
+from src.menu_ui import MenuUI
 from src.math_facts import MathFacts
 
 

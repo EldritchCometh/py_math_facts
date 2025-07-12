@@ -1,6 +1,7 @@
 
-
 import tkinter as tk
+from .menu_screens.start_screen import StartScreen
+from .menu_screens.settings_screen import SettingsScreen
 
 
 
@@ -15,6 +16,8 @@ class MenuUI(tk.Tk):
 
         self.title("Math Facts")
         self.attributes('-type', 'dialog')
+
+        start_screen = self.create_screen(StartScreen)
 
     
     def create_screen(self, screen_class):
