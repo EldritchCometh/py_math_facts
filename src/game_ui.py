@@ -1,7 +1,8 @@
 
 import tkinter as tk
-from .game_screens.play_screen import PlayScreen
-from .game_screens.ready_screen import ReadyScreen
+
+from src.game_screens.play_screen import PlayScreen
+from src.game_screens.ready_screen import ReadyScreen
 
 
 
@@ -25,29 +26,23 @@ class GameUI(tk.Tk):
         self.after_ids = {}
 
         self.screen = None
-        self.ready_screen = self.create_screen(ReadyScreen)
-        self.play_screen = self.create_screen(PlayScreen)
+        self.ready_screen = ReadyScreen(self)
+        self.play_screen = PlayScreen(self)
         self.set_screen(self.ready_screen)
-
-
-    def create_screen(self, screen_class):
-
-        screen = screen_class(self)
-        return screen
 
 
     def set_screen(self, screen):
 
         if self.screen is not None:
-            self.screen._ui_frame.pack_forget()
-
+            self.screen._gui_frame.pack_forget()
         self.screen = screen
-        self.screen._ui_frame.pack(expand=True, fill="both")
+
+        screen._gui_frame.pack(expand=True, fill="both")
         self.update_idletasks()
-        self.screen.resize()
-        self.screen.populate()
-        self._bind_with_debounce('<Configure>', lambda _: screen.resize())
+        screen.resize()
+        screen.populate()
         
+        self._bind_with_debounce('<Configure>', lambda _: screen.resize())
 
 
     def _bind_with_debounce(self, event_type, func):

@@ -4,7 +4,9 @@ import math
 import pickle
 import random
 from typing import List
-from src.facts_maker import FactsMaker, MathFactDC
+
+from src.utils.facts_maker import FactsMaker, MathFactDC
+
 
 
 class MathFacts:

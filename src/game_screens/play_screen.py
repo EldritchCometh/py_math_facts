@@ -15,15 +15,15 @@ class PlayScreen(tk.Frame):
         
         self.gui = gui
         self.app = gui.app
-        self.ps = gui.app.ps
+        self.pbs = gui.app.pbs
 
         self._gui_frame = tk.Frame(gui)
         self._frames: Dict[str, tk.Frame] = {}
         self._eq_sub_frames: List[tk.Frame] = []
         self._widgets: Dict[str, tk.Widget] = {}
+        
         self._font = tkFont.Font(family="Arial")
         self._after_ids = {}
-        
         self._window_size = (0, 0)
 
         self._make_layout()
@@ -36,7 +36,7 @@ class PlayScreen(tk.Frame):
                 widget.destroy()
             self._widgets = {}
         
-        for i, (t, f) in enumerate(zip(self.ps.equation, self._eq_sub_frames)):
+        for i, (t, f) in enumerate(zip(self.pbs.equation, self._eq_sub_frames)):
             if t == '_':
                 widget = tk.Entry(f, width=3, justify='center', font=self._font)
                 self._widgets['entry'] = widget
@@ -46,7 +46,7 @@ class PlayScreen(tk.Frame):
                 self._widgets[f'labels_{i}'] = widget
         
         prog_bar_names = ['timer', 'progress', 'mastery']
-        values = [0, self.ps.percent_completed, self.ps.percent_mastered]
+        values = [0, self.pbs.percent_completed, self.pbs.percent_mastered]
         for name, v in zip(prog_bar_names, values):
             bar = ttk.Progressbar(self._frames[f'{name}_frame'])
             bar.configure(orient='horizontal', mode='determinate')
@@ -104,21 +104,21 @@ class PlayScreen(tk.Frame):
         
         self.stop_timer()
         timer_bar = self._widgets['timer_bar']
-        timer_bar['maximum'] = self.ps.timer_duration
+        timer_bar['maximum'] = self.pbs.timer_duration
         timer_bar['value'] = 0
         self._start_time = time.time()
 
-        if self.ps.timer_duration == 0:
+        if self.pbs.timer_duration == 0:
             return
 
         def update_timer():
             elapsed = time.time() - self._start_time
             timer_bar['value'] = elapsed
-            if elapsed < self.ps.timer_duration:
+            if elapsed < self.pbs.timer_duration:
                 self._after_ids['update_timer'] = \
                     self._gui_frame.after(10, update_timer)
             else:
-                timer_bar['value'] = self.ps.timer_duration
+                timer_bar['value'] = self.pbs.timer_duration
                 self.app._on_timeup()
 
         update_timer()

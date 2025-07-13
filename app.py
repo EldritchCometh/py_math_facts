@@ -1,8 +1,7 @@
 
-from src.game_ui import GameUI
-from src.menu_ui import MenuUI
 from src.math_facts import MathFacts
-
+from src.menu_ui import MenuUI
+from src.game_ui import GameUI
 
 
 class MathFactsApp:
@@ -11,8 +10,8 @@ class MathFactsApp:
     def __init__(self, settings: dict):
 
         self.pbs = MathFacts(settings)
+        
         self.mui = MenuUI(self)
-
         self.mui.mainloop()
         
         # self.gui = GameUI(self)
@@ -33,24 +32,24 @@ class MathFactsApp:
         except:
             return
 
-        if return_value != self.ps.solution:
-            self.ps.update_mastery(answered_correctly=False)
-            self.ui.play_screen.stop_timer()
+        if return_value != self.pbs.solution:
+            self.pbs.update_mastery(answered_correctly=False)
+            self.gui.play_screen.stop_timer()
             return
 
-        self.ps.update_mastery(answered_correctly=True)
+        self.pbs.update_mastery(answered_correctly=True)
 
-        if self.ps.remaining:
-            self.ps.set_next()
-            self.ui.set_screen(self.ui.play_screen)
+        if self.pbs.remaining:
+            self.pbs.set_next()
+            self.gui.set_screen(self.gui.play_screen)
             return
 
-        self.ui.destroy()
+        self.gui.destroy()
 
 
     def _on_timeup(self):
 
-        self.ps.update_mastery(answered_correctly=False)
+        self.pbs.update_mastery(answered_correctly=False)
 
 
 

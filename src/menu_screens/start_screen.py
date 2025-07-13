@@ -1,10 +1,9 @@
 
 import tkinter as tk
-
+from src.menu_screens.settings_screen import SettingsScreen
 
 
 class StartScreen(tk.Frame):
-    
 
     def __init__(self, mui):
 
@@ -17,5 +16,10 @@ class StartScreen(tk.Frame):
 
     
     def _make_layout(self):
+
+        return
+    
+    
+    def populate(self):
 
         return

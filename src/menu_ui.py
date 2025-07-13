@@ -1,7 +1,8 @@
 
 import tkinter as tk
-from .menu_screens.start_screen import StartScreen
-from .menu_screens.settings_screen import SettingsScreen
+
+from src.menu_screens.start_screen import StartScreen
+from src.menu_screens.settings_screen import SettingsScreen
 
 
 
@@ -18,6 +19,10 @@ class MenuUI(tk.Tk):
         self.attributes('-type', 'dialog')
 
         start_screen = self.create_screen(StartScreen)
+        settings_screen = self.create_screen(SettingsScreen)
+
+        self.screen = None
+        self.set_screen(start_screen)
 
     
     def create_screen(self, screen_class):
