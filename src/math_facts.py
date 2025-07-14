@@ -1,11 +1,11 @@
 
-import os
 import math
-import pickle
 import random
 from typing import List
 
-from src.utils.facts_maker import FactsMaker, MathFactDC
+from src.utils.facts_maker import MathFactDC, FactsMaker
+from src.utils.user_data_manager import UserDataManager
+
 
 
 
@@ -15,19 +15,11 @@ class MathFacts:
     def __init__(self, settings):
 
         self._settings = settings
-        self._user = settings['user']
-        self._num_facts = settings['num_probs']
+        self._ud_manager = UserDataManager(settings['user'])
 
-        filter = lambda c: c.isalpha() or c.isdigit() or c == '_'
-        self._user = ''.join([c for c in self._user if filter(c)]).lower()
-
-        parent_directory = os.path.dirname(os.path.abspath(__file__))
-        self._data_path = os.path.join(parent_directory, '../app_data')
-        self._user_path = os.path.join(self._data_path, f'{self._user}.pkl')
-
-        self._all_facts: List[MathFactDC] = self._load_data()
-        self._retained_facts: List[MathFactDC] = self._get_retained_facts()
-        self._session_facts: List[MathFactDC] = self._get_session_facts()
+        self._all_facts: List[MathFactDC] = self._get_all_facts()
+        self._retained_facts = self._filter_by_settings(self._all_facts)
+        self._session_facts = self._get_session_facts(self._retained_facts)
         self._current_fact: MathFactDC; self.set_next()
 
         self._mastery_updated_flag = False
@@ -54,8 +46,9 @@ class MathFacts:
     @property
     def percent_completed(self) -> int:
         
-        num_completed = self._num_facts - len(self._session_facts) - 1
-        return num_completed / self._num_facts
+        num_facts = self._settings['num_facts']
+        num_completed = num_facts - len(self._session_facts) - 1
+        return num_completed / num_facts
 
 
     @property
@@ -104,41 +97,33 @@ class MathFacts:
         self._current_fact.mastered = (mastery == threshold)
         
         self._mastery_updated_flag = True
-        self._save_data()
+        self._ud_manager.save_data(self._all_facts)
 
 
-    def _get_session_facts(self) -> List[MathFactDC]:
+    def _get_session_facts(self, retained_facts) -> List[MathFactDC]:
 
-        mastered = [p for p in self._retained_facts if p.mastered]
-        n = min(len(mastered), math.floor(self._num_facts * 1/3))
+        num_facts = self._settings['num_facts']
+        
+        mastered = [p for p in retained_facts if p.mastered]
+        n = min(len(mastered), math.floor(num_facts * 1/3))
         session_facts = random.sample(mastered, n)
 
-        unmastered = [p for p in self._retained_facts if not p.mastered]
+        unmastered = [p for p in retained_facts if not p.mastered]
         unmastered.sort(key=lambda p: p.difficulty)
-        session_facts.extend(unmastered[:self._num_facts-len(session_facts)])
+        session_facts.extend(unmastered[:num_facts-len(session_facts)])
 
         return session_facts
 
 
-    def _get_retained_facts(self) -> List[MathFactDC]:
+    def _filter_by_settings(self, all_facts):
     
         sieved = lambda p: any(x in self._settings['exclude'] for x in p.terms)
-        return [p for p in self._all_facts if not sieved(p)]
+        return [p for p in all_facts if not sieved(p)]
 
 
-    def _load_data(self) -> List[MathFactDC]:
-        
-        if not os.path.exists(self._user_path):
+    def _get_all_facts(self) -> List[MathFactDC]:
+
+        if self._ud_manager.user_exists():
+            return self._ud_manager.get_facts()
+        else:
             return FactsMaker().math_facts
-        
-        with open(self._user_path, 'rb') as file:
-            return pickle.load(file)
-
-
-    def _save_data(self) -> None:
-
-        os.makedirs(self._data_path, exist_ok=True)
-        with open(self._user_path, 'wb') as f:
-            pickle.dump(self._all_facts, f)
-
-

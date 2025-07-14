@@ -9,20 +9,20 @@ class MathFactsApp:
 
     def __init__(self, settings: dict):
 
-        self.pbs = MathFacts(settings)
+        self.mfs = MathFacts(settings)
 
-        self.sui = StartUI(self)
-        self.sui.mainloop()
+        # self.sui = StartUI(self)
+        # self.sui.mainloop()
 
-        # self.gui = GameUI(self)
-        # self.gui.mainloop()
+        self.gui = GameUI(self)
+        self.gui.mainloop()
 
 
 
-    def _on_start(self):
+    def _on_start(self, _):
     
-        return
-    
+        self.gui.set_screen(self.gui.play_screen)
+
 
     def _on_return(self, event):
 
@@ -32,30 +32,30 @@ class MathFactsApp:
         except:
             return
 
-        if return_value != self.pbs.solution:
-            self.pbs.update_mastery(answered_correctly=False)
-            self.sui.play_screen.stop_timer()
+        if return_value != self.mfs.solution:
+            self.mfs.update_mastery(answered_correctly=False)
+            self.gui.play_screen.stop_timer()
             return
 
-        self.pbs.update_mastery(answered_correctly=True)
+        self.mfs.update_mastery(answered_correctly=True)
 
-        if self.pbs.remaining:
-            self.pbs.set_next()
-            self.sui.set_screen(self.sui.play_screen)
+        if self.mfs.remaining:
+            self.mfs.set_next()
+            self.gui.set_screen(self.gui.play_screen)
             return
 
-        self.sui.destroy()
+        self.gui.destroy()
 
 
     def _on_timeup(self):
 
-        self.pbs.update_mastery(answered_correctly=False)
+        self.mfs.update_mastery(answered_correctly=False)
 
 
 
 user_settings = {
     'user': 'user',
-    'num_probs': 20,
+    'num_facts': 20,
     'times': [8, 4],
     'exclude': []}
     

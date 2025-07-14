@@ -34,9 +34,14 @@ class FactsMaker:
         math_facts.extend(self._make_opr_facts(terms, '/'))
         math_facts = self._insert_backward_equations(math_facts)
         math_facts = self._insert_unknowns_in_equations(math_facts)
-        self._affect_final_touches(math_facts)
+        math_facts = self._affect_final_touches(math_facts)
 
-        self.math_facts = math_facts
+        self._math_facts = math_facts
+
+
+    @property
+    def math_facts(self) -> List[MathFactDC]:
+        return self._math_facts
 
 
     def _get_all_term_combos(self, biggest_terms):
@@ -104,4 +109,6 @@ class FactsMaker:
             threshold = len(math_facts) / 99
             difficulty = int(round(i / threshold))
             p.difficulty = difficulty
+
+        return math_facts
 
