@@ -4,7 +4,7 @@ import random
 from typing import List
 
 from src.utils.facts_maker import MathFactDC, FactsMaker
-from src.utils.user_data_manager import UserDataManager
+from src.utils.user_data import UserData
 
 
 
@@ -14,8 +14,7 @@ class MathFacts:
 
     def __init__(self, settings):
 
-        self._settings = settings
-        self._ud_manager = UserDataManager(settings['user'])
+        self._ud = UserData(settings['user'])
 
         self._all_facts: List[MathFactDC] = self._get_all_facts()
         self._retained_facts = self._filter_by_settings(self._all_facts)
@@ -45,8 +44,8 @@ class MathFacts:
 
     @property
     def percent_completed(self) -> int:
-        
-        num_facts = self._settings['num_facts']
+
+        num_facts = self._ud.num_facts
         num_completed = num_facts - len(self._session_facts) - 1
         return num_completed / num_facts
 
@@ -62,7 +61,7 @@ class MathFacts:
     def timer_duration(self) -> int:
         
         try:
-            times = [0] + self._settings['times']
+            times = [0] + self._ud.times
             return times[self.mastery]
         except:
             return 0
@@ -86,7 +85,7 @@ class MathFacts:
         if self._mastery_updated_flag:
             return
 
-        threshold = 1 + len(self._settings['times'])
+        threshold = 1 + len(self._ud.times)
 
         mastery = self._current_fact.mastery
         mastery += answered_correctly
@@ -97,13 +96,13 @@ class MathFacts:
         self._current_fact.mastered = (mastery == threshold)
         
         self._mastery_updated_flag = True
-        self._ud_manager.save_data(self._all_facts)
+        self._ud.save_data(self._all_facts)
 
 
     def _get_session_facts(self, retained_facts) -> List[MathFactDC]:
 
-        num_facts = self._settings['num_facts']
-        
+        num_facts = self._ud.num_facts
+
         mastered = [p for p in retained_facts if p.mastered]
         n = min(len(mastered), math.floor(num_facts * 1/3))
         session_facts = random.sample(mastered, n)
@@ -116,14 +115,14 @@ class MathFacts:
 
 
     def _filter_by_settings(self, all_facts):
-    
-        sieved = lambda p: any(x in self._settings['exclude'] for x in p.terms)
+
+        sieved = lambda p: any(x in self._ud.exclude for x in p.terms)
         return [p for p in all_facts if not sieved(p)]
 
 
     def _get_all_facts(self) -> List[MathFactDC]:
 
-        if self._ud_manager.user_exists():
-            return self._ud_manager.get_facts()
+        if self._ud.user_exists():
+            return self._ud.get_facts()
         else:
             return FactsMaker().math_facts

@@ -6,7 +6,7 @@ from pathlib import Path
 from src.utils.facts_maker import MathFactDC
 
 
-class UserDataManager:
+class UserData:
 
 
     def __init__(self, user):
@@ -17,6 +17,27 @@ class UserDataManager:
         parent_dir = Path(__file__).resolve().parents[2]
         self.save_dir = Path.joinpath(parent_dir, 'app_data')
         self._user_path = Path.joinpath(self.save_dir, f'{self._user}.pkl')
+
+
+    @property
+    def num_facts(self) -> int:
+
+        # fill this in later
+        return 20
+
+
+    @property
+    def times(self) -> List[int]:
+
+        # fill this in later
+        return []
+
+
+    @property
+    def exclude(self) -> List[str]:
+
+        # fill this in later
+        return [0]
 
 
     def user_exists(self) -> bool:
