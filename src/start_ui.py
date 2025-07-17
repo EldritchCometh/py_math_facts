@@ -66,52 +66,72 @@ class StartUI(tk.Tk):
             width=1, command=self._on_settings_clicked)
         self.settings_btn.pack(side='left', fill='y', padx=4)
 
+            
+    def _on_start_clicked(self):
+
+        cbbox_val = self._combobox_text.get()
+        if cbbox_val == "Select User":
+            return
+
+        self.user.set_user(cbbox_val)
+
 
     def _on_create_clicked(self):
 
-        print("Create button clicked")
-        return
-    
-
-    def _on_start_clicked(self):
-
-        print("Start button clicked")
-        return
-    
-    
-    def _on_main_clicked(self):
-        
         cbbox_val = self._combobox_text.get().strip()
-        
+    
+        errors = []
         criteria = lambda c: c.isalpha() or c.isdigit() or c == '_'
-        error_message = None
-        if not cbbox_val or \
-           not all(criteria(c) for c in cbbox_val) or \
-           len(cbbox_val) < 3 or \
-           not cbbox_val[0].isalpha():
-            error_message = "Invalid username. Must be at least 3 characters long, \nstart with a letter, and contain only letters, \ndigits, or underscores."
-            if hasattr(self, '_error_popup') and self._error_popup:
-                self._error_popup.destroy()
+        if not all(criteria(c) for c in cbbox_val):
+            errors.append("Username should contain only letters, digits,"
+                          "or underscores.")
+        if not cbbox_val:
+            errors.append("Username should not be empty.")
+        if len(cbbox_val) < 3:
+            errors.append("Username should be at least three characters.")
+        if not cbbox_val[0].isalpha():
+            errors.append("Username should start with a letter.")
+
+        if errors:
+            err_message = "\n".join(errors)
+            self._clear_error_popup()
             self._error_popup = tk.Toplevel(self)
-            self._error_popup.overrideredirect(True)  # Borderless
+            self._error_popup.overrideredirect(True)
             self._error_popup.configure(bg="lightyellow")
-            label = tk.Label(self._error_popup, text=error_message, fg="red", bg="lightyellow", font=("Arial", 12))
+            label = tk.Label(
+                self._error_popup, text=err_message, fg="red", 
+                bg="lightyellow", font=("Arial", 12), justify="left")
             label.pack(padx=5, pady=5)
-            # Position above combobox
             x = self.user_combo.winfo_rootx()
-            y = self.user_combo.winfo_rooty() - 30  # Slightly above
+            y = self.user_combo.winfo_rooty() - len(errors) * 30 - 17
             self._error_popup.geometry(f"+{x}+{y}")
-            # Auto-hide after 3 seconds
-            self.after(3000, self._clear_error_popup)
+            self.after(5000, self._clear_error_popup)
             return
         
-        print(f"Main button clicked with user: {cbbox_val}")
+        self.user.create_user(cbbox_val)
+        
+
+    def _clear_error_popup(self):
+
+        if hasattr(self, '_error_popup') and self._error_popup:
+            self._error_popup.destroy()
+            self._error_popup = None
+
+ 
+    def _on_main_clicked(self):
+
+        if self._main_button_text.get() == "Create":
+            self._on_create_clicked()
+            return
+        elif self._main_button_text.get() == "Start":
+            self._on_start_clicked()
+            return
 
 
     def _on_settings_clicked(self):
 
-        print("Opening settings window")
-        return
+        settings_ui = SettingsUI()
+        settings_ui.mainloop()
 
 
     def _on_user_update(self, *args):

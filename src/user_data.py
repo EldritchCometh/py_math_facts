@@ -32,16 +32,20 @@ class UserData:
 
 
     @property
-    def exclude(self) -> List[str]:
+    def exclude(self) -> List[int]:
 
         # fill this in later
         return [0]
-    
 
-    def _set_user(self, user: str):
 
-        filter = lambda c: c.isalpha() or c.isdigit() or c == '_'
-        self._user = ''.join([c for c in user if filter(c)]).lower()
+    def create_user(self, user: str):
+
+        # Create a new user with the given username
+        return
+
+
+    def set_user(self, user: str):
+
         parent_dir = Path(__file__).resolve().parents[2]
         self.save_dir = Path.joinpath(parent_dir, 'app_data')
         self._user_path = Path.joinpath(self.save_dir, f'{self._user}.pkl')
