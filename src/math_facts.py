@@ -3,8 +3,8 @@ import math
 import random
 from typing import List
 
-from src.utils.facts_maker import MathFactDC, FactsMaker
-from src.utils.user_data import UserData
+from src.facts_maker import MathFactDC, FactsMaker
+from src.user_data import UserData
 
 
 
@@ -96,7 +96,7 @@ class MathFacts:
         self._current_fact.mastered = (mastery == threshold)
         
         self._mastery_updated_flag = True
-        self._ud.save_data(self._all_facts)
+        self._ud.save_data(self._all_facts, )
 
 
     def _get_session_facts(self, retained_facts) -> List[MathFactDC]:
