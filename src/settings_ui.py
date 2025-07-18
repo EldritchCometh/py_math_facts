@@ -67,7 +67,7 @@ class SettingsUI(tk.Toplevel):
             numbers_frame.rowconfigure(i, weight=1)
             var = tk.IntVar(value=1)
             check = tk.Checkbutton(numbers_frame, variable=var)
-            check.grid(row=i, column=0, sticky="w")
+            check.grid(row=i, column=0, sticky="e")
             message = f"Include {i+1}"
             label = tk.Label(numbers_frame, text=message, font=self._font)
             label.grid(row=i, column=1, sticky="w", padx=(0, 6))
@@ -83,7 +83,7 @@ class SettingsUI(tk.Toplevel):
             types_frame.rowconfigure(i, weight=1)
             var = tk.IntVar(value=1)
             check = tk.Checkbutton(types_frame, variable=var)
-            check.grid(row=i, column=0, sticky="w")
+            check.grid(row=i, column=0, sticky="e")
             message = f"Type {i+1}"
             label = tk.Label(types_frame, text=message, font=self._font)
             label.grid(row=i, column=1, sticky="w")
@@ -99,10 +99,11 @@ class SettingsUI(tk.Toplevel):
             patterns_frame.rowconfigure(i, weight=1)
             var = tk.IntVar(value=1)
             check = tk.Checkbutton(patterns_frame, variable=var)
-            check.grid(row=i, column=0, sticky="w")
+            check.grid(row=i, column=0, sticky="e")
             message = f"Pattern {i+1}"
             label = tk.Label(patterns_frame, text=message, font=self._font)
             label.grid(row=i, column=1, sticky="w")
+
 
     def _populate_username_frame(self):
 
@@ -113,7 +114,7 @@ class SettingsUI(tk.Toplevel):
         username_frame.rowconfigure(1, weight=1)
         
         label = tk.Label(username_frame, text="Change username:", font=self._font)
-        label.grid(row=0, column=0, sticky="w", padx=4)
+        label.grid(row=0, column=0, sticky="e", padx=4)
 
         entry = tk.Entry(username_frame, font=self._font, width=15)
         entry.grid(row=1, column=0, sticky="w", padx=4)
