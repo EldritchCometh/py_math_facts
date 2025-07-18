@@ -6,7 +6,7 @@ from src.user_data import UserData
 
 
 
-class SettingsUI(tk.Tk):
+class SettingsUI(tk.Toplevel):
 
 
     def __init__(self):
@@ -15,21 +15,19 @@ class SettingsUI(tk.Tk):
         
         self.title("Settings")
         self.attributes('-type', 'dialog')
-        self.geometry("600x400")
-        
+        #self.geometry("600x400")
+
+        self._padding = 2
+        self._boarderwidth = 3
+        self._font = ("Arial", 16)
+        self.configure(padx=self._padding / 2, pady=self._padding / 2)
+
         self._frames = {}
         self._make_layout()
         self._populate()
 
 
     def _make_layout(self):
-
-        # Included numbers    - 13 checkboxes
-        # Included fact types -  4 checkboxes
-        # Included patterns   -  2 checkboxes
-        # Change username - entry field - button
-        # Timers - entry field
-        # Save button - Cancel button
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -40,19 +38,112 @@ class SettingsUI(tk.Tk):
         self.rowconfigure(4, weight=1)
         self.rowconfigure(5, weight=1)
 
-        self._frames['numbers'] = tk.Frame(self, bg="#e0f7fa")
-        self._frames['numbers'].grid(row=0, column=0, rowspan=6, sticky="nsew")
+        self._frames['numbers'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['numbers'].grid(row=0, column=0, rowspan=5, sticky="nsew", padx=self._padding, pady=self._padding)
 
-        self._frames['types'] = tk.Frame(self, bg="#ffe0b2")
-        self._frames['types'].grid(row=0, column=1, rowspan=2, sticky="nsew")
+        self._frames['types'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['types'].grid(row=0, column=1, rowspan=2, sticky="nsew", padx=self._padding, pady=self._padding)
 
-        self._frames['patterns'] = tk.Frame(self, bg="#c8e6c9")
-        self._frames['patterns'].grid(row=2, column=1, rowspan=1, sticky="nsew")
+        self._frames['patterns'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['patterns'].grid(row=2, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
 
-        self._frames['username'] = tk.Frame(self, bg="#f8bbd0")
-        self._frames['username'].grid(row=3, column=1, rowspan=3, sticky="nsew")
+        self._frames['username'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['username'].grid(row=3, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
+
+        self._frames['timers'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['timers'].grid(row=4, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
+
+        self._frames['buttons'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
+        self._frames['buttons'].grid(row=5, column=0, columnspan=2, sticky="nsew", padx=self._padding, pady=self._padding)
+
+
+    def _populate_numbers_frame(self):
+
+        numbers_frame = self._frames['numbers']
+
+        numbers_frame.columnconfigure(0, weight=1)
+        numbers_frame.columnconfigure(1, weight=1)
+        for i in range(13):
+            numbers_frame.rowconfigure(i, weight=1)
+            var = tk.IntVar(value=1)
+            check = tk.Checkbutton(numbers_frame, variable=var)
+            check.grid(row=i, column=0, sticky="w")
+            message = f"Include {i+1}"
+            label = tk.Label(numbers_frame, text=message, font=self._font)
+            label.grid(row=i, column=1, sticky="w", padx=(0, 6))
+
+
+    def _populate_types_frame(self):
+
+        types_frame = self._frames['types']
+
+        types_frame.columnconfigure(0, weight=1)
+        types_frame.columnconfigure(1, weight=1)
+        for i in range(4):
+            types_frame.rowconfigure(i, weight=1)
+            var = tk.IntVar(value=1)
+            check = tk.Checkbutton(types_frame, variable=var)
+            check.grid(row=i, column=0, sticky="w")
+            message = f"Type {i+1}"
+            label = tk.Label(types_frame, text=message, font=self._font)
+            label.grid(row=i, column=1, sticky="w")
+
+
+    def _populate_patterns_frame(self):
+
+        patterns_frame = self._frames['patterns']
+
+        patterns_frame.columnconfigure(0, weight=1)
+        patterns_frame.columnconfigure(1, weight=1)
+        for i in range(2):
+            patterns_frame.rowconfigure(i, weight=1)
+            var = tk.IntVar(value=1)
+            check = tk.Checkbutton(patterns_frame, variable=var)
+            check.grid(row=i, column=0, sticky="w")
+            message = f"Pattern {i+1}"
+            label = tk.Label(patterns_frame, text=message, font=self._font)
+            label.grid(row=i, column=1, sticky="w")
+
+    def _populate_username_frame(self):
+
+        username_frame = self._frames['username']
+
+        username_frame.columnconfigure(0, weight=1)
+        username_frame.rowconfigure(0, weight=1)
+        username_frame.rowconfigure(1, weight=1)
+        
+        label = tk.Label(username_frame, text="Change username:", font=self._font)
+        label.grid(row=0, column=0, sticky="w", padx=4)
+
+        entry = tk.Entry(username_frame, font=self._font, width=15)
+        entry.grid(row=1, column=0, sticky="w", padx=4)
+
+        # Here you would typically bind the entry to a variable or save it in UserData
+            
+    def _populate_timers_frame(self):
+
+        timers_frame = self._frames['timers']
+
+        timers_frame.columnconfigure(0, weight=1)
+        timers_frame.rowconfigure(0, weight=1)
+        timers_frame.rowconfigure(1, weight=1)
+
+        label = tk.Label(timers_frame, text="Timer Values:", font=self._font)
+        label.grid(row=0, column=0, sticky="w", padx=4)
+
+        entry = tk.Entry(timers_frame, font=self._font, width=15)
+        entry.grid(row=1, column=0, sticky="w", padx=4)
+
+        # Here you would typically bind the entry to a variable or save it in UserData
+
+        # Here you would typically add widgets for timer settings
+        # For example, you could add entry fields for different timer values
 
 
     def _populate(self):
 
-        return
+        self._populate_numbers_frame()
+        self._populate_types_frame()
+        self._populate_patterns_frame()
+        self._populate_username_frame()
+        self._populate_timers_frame()

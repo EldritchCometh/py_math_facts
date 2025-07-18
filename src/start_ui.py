@@ -22,6 +22,9 @@ class StartUI(tk.Tk):
         self._main_button_text = tk.StringVar(value="Start")
         self._combobox_text = tk.StringVar(value="Select User")
 
+        self._big_font = ("Arial", 42, "bold")
+        self._little_font = ("Arial", 14)
+
         self._frame = tk.Frame(self)
         self._make_layout()
         self._populate()
@@ -45,24 +48,26 @@ class StartUI(tk.Tk):
 
         message = "Welcome to Math Facts!"
         self.title_label = tk.Label(
-            self.north_frame, text=message, font=("Arial", 42, "bold"))
+            self.north_frame, text=message, font=self._big_font)
         self.title_label.pack(anchor='center')
         
-        font = ("Arial", 18)
-
         self.user_combo = ttk.Combobox(
-            self.south_frame, values=UserData.get_usernames(), 
-            state="normal", font=font, textvariable=self._combobox_text)
+            self.south_frame, values=UserData.get_usernames(),
+            state="normal", font=self._little_font, textvariable=self._combobox_text,
+            justify='left')
+        style = ttk.Style()
+        style.configure("LeftPad.TCombobox", padding=(8, 0, 0, 0))
+        self.user_combo.configure(style="LeftPad.TCombobox")
         self.user_combo.pack(side='left', fill='both', expand=True, padx=4)
         self._combobox_text.trace_add('write', self._on_user_update)
 
         self.main_btn = tk.Button(
             self.south_frame, textvariable=self._main_button_text,
-            font=font, width=2, command=self._on_main_clicked)
+            font=self._little_font, width=2, command=self._on_main_clicked)
         self.main_btn.pack(side='left', fill='both', expand=True, padx=4)
 
         self.settings_btn = tk.Button(
-            self.south_frame, text="⚙", font=font, 
+            self.south_frame, text="⚙", font=self._little_font,
             width=1, command=self._on_settings_clicked)
         self.settings_btn.pack(side='left', fill='y', padx=4)
 
