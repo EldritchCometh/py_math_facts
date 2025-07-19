@@ -53,8 +53,11 @@ class SettingsUI(tk.Toplevel):
         self._frames['timers'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
         self._frames['timers'].grid(row=4, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
 
-        self._frames['buttons'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['buttons'].grid(row=5, column=0, columnspan=2, sticky="nsew", padx=self._padding, pady=self._padding)
+        self._frames['start_button'] = tk.Frame(self)
+        self._frames['start_button'].grid(row=5, column=0, sticky="nsew", padx=self._padding, pady=self._padding)
+
+        self._frames['cancel_button'] = tk.Frame(self)
+        self._frames['cancel_button'].grid(row=5, column=1, sticky="nsew", padx=self._padding, pady=self._padding)
 
 
     def _populate_numbers_frame(self):
@@ -68,7 +71,7 @@ class SettingsUI(tk.Toplevel):
             var = tk.IntVar(value=1)
             check = tk.Checkbutton(numbers_frame, variable=var)
             check.grid(row=i, column=0, sticky="e")
-            message = f"Include {i+1}"
+            message = f"Include {i}"
             label = tk.Label(numbers_frame, text=message, font=self._font)
             label.grid(row=i, column=1, sticky="w", padx=(0, 6))
 
@@ -108,8 +111,6 @@ class SettingsUI(tk.Toplevel):
     def _populate_username_frame(self):
 
         username_frame = self._frames['username']
-
-        username_frame.columnconfigure(0, weight=1)
         username_frame.rowconfigure(0, weight=1)
         username_frame.rowconfigure(1, weight=1)
         
@@ -120,12 +121,11 @@ class SettingsUI(tk.Toplevel):
         entry.grid(row=1, column=0, sticky="w", padx=4)
 
         # Here you would typically bind the entry to a variable or save it in UserData
-            
+
+
     def _populate_timers_frame(self):
 
         timers_frame = self._frames['timers']
-
-        timers_frame.columnconfigure(0, weight=1)
         timers_frame.rowconfigure(0, weight=1)
         timers_frame.rowconfigure(1, weight=1)
 
@@ -140,6 +140,32 @@ class SettingsUI(tk.Toplevel):
         # Here you would typically add widgets for timer settings
         # For example, you could add entry fields for different timer values
 
+    
+    def _populate_buttons_frames(self):
+
+        save_frame = self._frames['start_button']
+        save_button = tk.Button(save_frame, text="Save", font=self._font, width=15, relief="raised", borderwidth=3, command=self._on_save_clicked)
+        save_button.pack(expand=True, anchor='center')
+
+        cancel_frame = self._frames['cancel_button']
+        cancel_button = tk.Button(cancel_frame, text="Cancel", font=self._font, width=15, relief="raised", borderwidth=3, command=self._on_cancel_clicked)
+        cancel_button.pack(expand=True, anchor='center')
+
+
+    def _on_save_clicked(self):
+
+        # Here you would implement the logic to save the settings
+        # For example, you could save the state of checkboxes and entries to UserData
+        print("Settings saved")
+        self.destroy()
+
+    
+    def _on_cancel_clicked(self):
+
+        # Here you would implement the logic to cancel the settings changes
+        print("Settings changes canceled")
+        self.destroy()
+
 
     def _populate(self):
 
@@ -148,3 +174,4 @@ class SettingsUI(tk.Toplevel):
         self._populate_patterns_frame()
         self._populate_username_frame()
         self._populate_timers_frame()
+        self._populate_buttons_frames()
