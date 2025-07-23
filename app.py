@@ -11,14 +11,13 @@ class MathFactsApp:
     def __init__(self):
 
         self.user = UserData()
-        self.sui: StartUI
         self._open_start_window()
 
 
     def _open_start_window(self):
 
-        self.sui = StartUI(self.user)
-        self.sui.mainloop()
+        sui = StartUI(self.user)
+        sui.mainloop()
 
 
 #     def open_settings_window(self):

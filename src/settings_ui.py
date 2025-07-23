@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from src.user_data import UserData
+from src.frame_dict import FrameDict
 
 
 
@@ -15,49 +16,22 @@ class SettingsUI(tk.Toplevel):
         
         self.title("Settings")
         self.attributes('-type', 'dialog')
-        #self.geometry("600x400")
+        self.geometry("600x400")
 
         self._padding = 2
         self._boarderwidth = 3
         self._font = ("Arial", 16)
         self.configure(padx=self._padding / 2, pady=self._padding / 2)
 
-        self._frames = {}
+        self._fd =  FrameDict(tk.Frame(self), colors=True)
         self._make_layout()
-        self._populate()
+        #self._populate()
+        self._fd.get('').pack(expand=True, fill="both")
 
 
     def _make_layout(self):
 
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
-        self.rowconfigure(3, weight=1)
-        self.rowconfigure(4, weight=1)
-        self.rowconfigure(5, weight=1)
-
-        self._frames['numbers'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['numbers'].grid(row=0, column=0, rowspan=5, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['types'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['types'].grid(row=0, column=1, rowspan=2, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['patterns'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['patterns'].grid(row=2, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['username'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['username'].grid(row=3, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['timers'] = tk.Frame(self, relief="raised", borderwidth=self._boarderwidth)
-        self._frames['timers'].grid(row=4, column=1, rowspan=1, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['start_button'] = tk.Frame(self)
-        self._frames['start_button'].grid(row=5, column=0, sticky="nsew", padx=self._padding, pady=self._padding)
-
-        self._frames['cancel_button'] = tk.Frame(self)
-        self._frames['cancel_button'].grid(row=5, column=1, sticky="nsew", padx=self._padding, pady=self._padding)
+        self._fd.v_split('', [tk.Frame, tk.Frame], [4, 1])
 
 
     def _populate_numbers_frame(self):
