@@ -1,14 +1,15 @@
 import tkinter as tk
 import re
-
+import random
 
 
 class FrameDict:
 
 
-    def __init__(self, parent):
+    def __init__(self, parent, colors = False):
         
         self._frames = {'frame': parent}
+        self._colors = colors
 
 
     def _validate_path(self, path):
@@ -49,6 +50,8 @@ class FrameDict:
         for i, fc in enumerate(frame_classes):
             parent_frame.rowconfigure(i, weight=weights[i])
             new_frame = fc(parent_frame)
+            if self._colors:
+                new_frame.config(bg=f'#{random.randint(0, 0xFFFFFF):06x}')
             parent_dict[f'v{str(i)}'] = {'frame': new_frame}
             new_frame.grid(row=i, column=0, sticky='nsew')
 
@@ -66,6 +69,8 @@ class FrameDict:
         for i, fc in enumerate(frame_classes):
             parent_frame.columnconfigure(i, weight=weights[i])
             new_frame = fc(parent_frame)
+            if self._colors:
+                new_frame.config(bg=f'#{random.randint(0, 0xFFFFFF):06x}')
             parent_dict[f'h{str(i)}'] = {'frame': new_frame}
             new_frame.grid(row=0, column=i, sticky='nsew')
 

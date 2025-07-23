@@ -1,0 +1,39 @@
+
+import tkinter as tk
+from tkinter import ttk
+
+from src.user_data import UserData
+from src.settings_ui import SettingsUI
+from src.frame_dict import FrameDict
+
+
+class StartUI(tk.Tk):
+
+
+    def __init__(self, user):
+
+        super().__init__()
+        self.user = user
+
+        self.title("Math Facts")
+        self.attributes('-type', 'dialog')
+        self.geometry("2000x500")
+        
+        self._main_button_text = tk.StringVar(value="Start")
+        self._combobox_text = tk.StringVar(value="Select User")
+
+        self._big_font = ("Arial", 42, "bold")
+        self._little_font = ("Arial", 14)
+
+        self._fd = FrameDict(tk.Frame(self), colors=True)
+        self._make_layout()
+        #self._populate()
+        self._fd.get('').pack(expand=True, fill="both")
+
+
+    def _make_layout(self):
+        
+        fd = self._fd
+
+        fd.v_split('', [tk.Frame, tk.Frame], weights=[4, 1])
+        fd.h_split('v1', [tk.Frame, tk.Frame, tk.Frame], weights=[12, 2, 1])
