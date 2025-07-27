@@ -1,11 +1,11 @@
 
+import string
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
+import tkinter.font as tkfont
 
 from src.password_ui import PasswordUI
-from src.settings_ui import SettingsUI
-from src.frame_dict import FrameDict
-
 
 
 
@@ -19,105 +19,75 @@ class StartUI(tk.Tk):
 
         self.title("Math Facts")
         self.attributes('-type', 'dialog')
+
+        self._padding = 4
+        self._boarderwidth = 3
+
+        default_font = tkfont.nametofont("TkDefaultFont")
+        self._big_font = tkfont.Font(family=default_font.actual()["family"], size=42, weight="bold")
+        self._med_font = tkfont.Font(family=default_font.actual()["family"], size=14)
+        self._small_font = tkfont.Font(family=default_font.actual()["family"], size=12)
         
+        self._combobox: ttk.Combobox
         self._main_button_text = tk.StringVar(value="Start")
         self._combobox_text = tk.StringVar(value="Select User")
 
-        self._big_font = ("Arial", 42, "bold")
-        self._little_font = ("Arial", 14)
-
-        self._fd =  FrameDict(tk.Frame(self))
-        self._make_layout()
-        self._populate()
-        self._fd.get('').pack(expand=True, fill="both")
+        self._main_frame = tk.Frame(self)
+        self._make_layout(self._main_frame)
+        self._main_frame.pack(expand=True, fill='both', padx=4, pady=4)
 
 
-    def _make_layout(self):
+    def _make_layout(self, parent):
 
-        self._fd.v_split('', [tk.Frame, tk.Frame], [3, 1])
-        self._fd.h_split('v1', [tk.Frame, tk.Frame, tk.Frame], [12, 3, 1])
+        parent.grid_columnconfigure(0, weight=1)
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_rowconfigure(1, weight=1)
+
+        welcome_frame = tk.Frame(parent, bd=self._boarderwidth, relief="groove")
+        widgets_frame = tk.Frame(parent)
+
+        welcome_frame.grid(row=0, column=0, sticky='nsew', padx=self._padding, pady=self._padding)
+        widgets_frame.grid(row=1, column=0, sticky='nsew', padx=self._padding, pady=self._padding)
+
+        self._welcome_frame(welcome_frame)
+        self._widgets_frame(widgets_frame)
 
 
-    def _populate(self):
+    def _welcome_frame(self, parent):
+
+        frame = tk.Frame(parent)
+        frame.pack(expand=True, fill='both')
 
         message = "Welcome to Math Facts!"
-        self.title_label = tk.Label(
-            self._fd.get('v0'), text=message, font=self._big_font)
-        self.title_label.pack(fill='both', expand=True, padx=4, pady=4)
+        title_label = tk.Label(frame, text=message, font=self._big_font)
+        title_label.pack(fill='both', expand=True, padx=18, pady=self._padding)
+
+
+    def _widgets_frame(self, parent):
+
+        frame = tk.Frame(parent)
+        frame.pack(expand=True, fill='both', pady=self._padding)
+
+        style = ttk.Style(self)
+        style.configure('TButton', font=self._med_font, padding=10)
+
+        save_button = ttk.Button(frame, text="⚙", style='TButton', command=self._on_settings_clicked, width=3)
+        cancel_button = ttk.Button(frame, textvariable=self._main_button_text, style='TButton', command=self._on_main_clicked, width=10)
+        self._combobox = ttk.Combobox(
+            frame, values=self.user.get_usernames(), state="normal", 
+            font=self._med_font, textvariable=self._combobox_text)
         
-        self.user_combo = ttk.Combobox(
-            self._fd.get('v1/h0'), values=self.user.get_usernames(), 
-            state="normal", font=self._little_font, 
-            textvariable=self._combobox_text)
-        style = ttk.Style()
-        style.configure("LeftPad.TCombobox", padding=(8, 0, 0, 0))
-        self.user_combo.configure(style="LeftPad.TCombobox")
-        self.user_combo.pack(fill='both', expand=True, padx=(4, 2), pady=4)
+        save_button.pack(side='right', fill='y', padx=self._padding)
+        cancel_button.pack(side='right', fill='y', padx=self._padding)
+        self._combobox.pack(side='right', fill='y', padx=self._padding)
         self._combobox_text.trace_add('write', self._on_user_update)
 
-        self.main_btn = tk.Button(
-            self._fd.get('v1/h1'), textvariable=self._main_button_text,
-            font=self._little_font, width=2, command=self._on_main_clicked)
-        self.main_btn.pack(fill='both', expand=True, padx=(2, 2), pady=4)
 
-        self.settings_btn = tk.Button(
-            self._fd.get('v1/h2'), text="⚙", font=self._little_font,
-            width=1, command=self._on_settings_clicked)
-        self.settings_btn.pack(fill='both', padx=(2, 4), pady=4)
+    def _on_settings_clicked(self):
 
-            
-    def _on_start_clicked(self):
-
-        cbbox_val = self._combobox_text.get()
-        if cbbox_val == "Select User":
-            return
-
-        self.user.set_user(cbbox_val)
+        PasswordUI(self.user)
 
 
-    def _on_create_clicked(self):
-
-        cbbox_val = self._combobox_text.get().strip()
-    
-        errors = []
-        criteria = lambda c: c.isalpha() or c.isdigit() or c == '_'
-        if not all(criteria(c) for c in cbbox_val):
-            errors.append("Username should contain only letters, digits,"
-                          "or underscores.")
-        if not cbbox_val:
-            errors.append("Username should not be empty.")
-        if len(cbbox_val) < 3:
-            errors.append("Username should be at least three characters.")
-        if not cbbox_val[0].isalpha():
-            errors.append("Username should start with a letter.")
-
-        if errors:
-            err_message = "\n".join(errors)
-            self._clear_error_popup()
-            self._error_popup = tk.Toplevel(self)
-            self._error_popup.overrideredirect(True)
-            self._error_popup.configure(bg="lightyellow")
-            label = tk.Label(
-                self._error_popup, text=err_message, fg="red", 
-                bg="lightyellow", font=("Arial", 12), justify="left")
-            label.pack(padx=5, pady=5)
-            x = self.user_combo.winfo_rootx()
-            y = self.user_combo.winfo_rooty() - len(errors) * 30 - 17
-            self._error_popup.geometry(f"+{x}+{y}")
-            self.after(5000, self._clear_error_popup)
-            return
-        
-        self.user.create_user(cbbox_val)
-        self.user.set_user(cbbox_val)
-
-
-    def _clear_error_popup(self):
-
-        if hasattr(self, '_error_popup') and self._error_popup:
-            self._error_popup.destroy()
-            self._error_popup = None
-
- 
     def _on_main_clicked(self):
 
         if self._main_button_text.get() == "Create":
@@ -126,19 +96,50 @@ class StartUI(tk.Tk):
         elif self._main_button_text.get() == "Start":
             self._on_start_clicked()
             return
+    
 
-
-    def _on_settings_clicked(self):
-
-        password_ui = 
-
-    def _on_user_update(self, *args):
+    def _on_user_update(self, *_):
 
         user = self._combobox_text.get().strip()
         if not user:
             self._main_button_text.set("Start")
             return
-        if user in UserData.get_usernames():
+        if user in self.user.get_usernames():
             self._main_button_text.set("Start")
         else:
             self._main_button_text.set("Create")
+
+
+    def _on_create_clicked(self):
+
+        cbbox_val = self._combobox.get()
+        if not cbbox_val:
+            return
+
+        errs = []
+        if not cbbox_val[0].isalpha():
+            errs.append("start with a letter")            
+        if len(cbbox_val) < 3:
+            errs.append("be at least three characters long")
+        whitelist = string.ascii_letters + string.digits + '_'
+        if not all(c in whitelist for c in cbbox_val):
+            errs.append("contain only letters, digits, and underscores")
+        if errs:
+            message = "Username should:\n" + "\n".join(f"  - {err}" for err in errs)
+            self.option_add("*Dialog.msg.font", self._small_font)
+            self.option_add("*Dialog.msg.wrapLength", "0")
+            messagebox.showinfo("Requirements", message)
+            self._combobox.delete(0, tk.END)
+            return
+        
+        # self.user.create_user(cbbox_val)
+        # self.user.set_user(cbbox_val)
+
+
+    def _on_start_clicked(self):
+
+        cbbox_val = self._combobox_text.get()
+        if cbbox_val == "Select User":
+            return
+
+        self.user.set_user(cbbox_val)

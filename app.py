@@ -1,8 +1,17 @@
 
-from src.math_facts import MathFacts
 from src.start_ui import StartUI
 from src.game_ui import GameUI
-from src.user_data import UserData
+from src.user_manager import UserManager
+
+
+# todo:
+# - start screen needs to assign user before any button clicked
+# - implement settings from settings_ui
+# - add an indent to the text in combobox
+# - delete failed password attempts
+# - add return to the entry widgets
+# - make sure all entry widgets are focused when the window opens
+# - fill in demo stuff in usermanager
 
 
 class MathFactsApp:
@@ -10,19 +19,13 @@ class MathFactsApp:
 
     def __init__(self):
 
-        self.user = UserData()
-        self._open_start_window()
+        self.user = UserManager()
+        StartUI(self.user).mainloop()
 
+        
 
-    def _open_start_window(self):
-
-        sui = StartUI(self.user)
-        sui.mainloop()
-
-
-#     def open_settings_window(self):
-#         print("Opening settings window")
-#         # Here you would implement the logic to open the settings window
+#     def open_settings_window(self):#         print("Opening settings window")
+#         # Here you would implement the logic to open the settings
 #         # For example, you could create a new instance of a SettingsUI class
 #         # and call its mainloop method.
 #         # settings_ui = SettingsUI(self)
