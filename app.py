@@ -5,13 +5,13 @@ from src.user_manager import UserManager
 
 
 # todo:
-# - start screen needs to assign user before any button clicked
-# - implement settings from settings_ui
+# - fix settings_ui
 # - add an indent to the text in combobox
 # - delete failed password attempts
 # - add return to the entry widgets
 # - make sure all entry widgets are focused when the window opens
 # - fill in demo stuff in usermanager
+# - double check on the last lines in _on_create_clicked in start_ui
 
 
 class MathFactsApp:

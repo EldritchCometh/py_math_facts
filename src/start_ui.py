@@ -15,7 +15,7 @@ class StartUI(tk.Tk):
     def __init__(self, user):
 
         super().__init__()
-        self.user = user
+        self._user = user
 
         self.title("Math Facts")
         self.attributes('-type', 'dialog')
@@ -71,13 +71,13 @@ class StartUI(tk.Tk):
         style = ttk.Style(self)
         style.configure('TButton', font=self._med_font, padding=10)
 
-        save_button = ttk.Button(frame, text="⚙", style='TButton', command=self._on_settings_clicked, width=3)
+        main_button = ttk.Button(frame, text="⚙", style='TButton', command=self._on_settings_clicked, width=3)
         cancel_button = ttk.Button(frame, textvariable=self._main_button_text, style='TButton', command=self._on_main_clicked, width=10)
         self._combobox = ttk.Combobox(
-            frame, values=self.user.get_usernames(), state="normal", 
+            frame, values=self._user.get_usernames(), state="normal", 
             font=self._med_font, textvariable=self._combobox_text)
         
-        save_button.pack(side='right', fill='y', padx=self._padding)
+        main_button.pack(side='right', fill='y', padx=self._padding)
         cancel_button.pack(side='right', fill='y', padx=self._padding)
         self._combobox.pack(side='right', fill='y', padx=self._padding)
         self._combobox_text.trace_add('write', self._on_user_update)
@@ -85,11 +85,23 @@ class StartUI(tk.Tk):
 
     def _on_settings_clicked(self):
 
-        PasswordUI(self.user)
+        cbbox_val = self._combobox_text.get()
+        if not cbbox_val or cbbox_val == "Select User":
+            return
+
+        if cbbox_val in self._user.get_usernames():
+            self._user.load_user(cbbox_val)
+        else:
+            return
+        PasswordUI(self._user)
 
 
     def _on_main_clicked(self):
 
+        cbbox_val = self._combobox_text.get()
+        if not cbbox_val or cbbox_val == "Select User":
+            return
+        
         if self._main_button_text.get() == "Create":
             self._on_create_clicked()
             return
@@ -100,21 +112,17 @@ class StartUI(tk.Tk):
 
     def _on_user_update(self, *_):
 
-        user = self._combobox_text.get().strip()
-        if not user:
-            self._main_button_text.set("Start")
-            return
-        if user in self.user.get_usernames():
-            self._main_button_text.set("Start")
-        else:
+        cbbox_val = self._combobox_text.get()
+
+        if cbbox_val not in self._user.get_usernames():
             self._main_button_text.set("Create")
+        else:
+            self._main_button_text.set("Start")
 
 
     def _on_create_clicked(self):
 
         cbbox_val = self._combobox.get()
-        if not cbbox_val:
-            return
 
         errs = []
         if not cbbox_val[0].isalpha():
@@ -129,17 +137,15 @@ class StartUI(tk.Tk):
             self.option_add("*Dialog.msg.font", self._small_font)
             self.option_add("*Dialog.msg.wrapLength", "0")
             messagebox.showinfo("Requirements", message)
-            self._combobox.delete(0, tk.END)
             return
         
-        # self.user.create_user(cbbox_val)
-        # self.user.set_user(cbbox_val)
+        self._user.create_user(cbbox_val)
+        self._combobox['values'] = self._user.get_usernames()
+        self._on_user_update()
 
 
     def _on_start_clicked(self):
 
-        cbbox_val = self._combobox_text.get()
-        if cbbox_val == "Select User":
-            return
-
-        self.user.set_user(cbbox_val)
+        cbbox_val = self._combobox.get()
+        
+        self._user.load_user(cbbox_val)

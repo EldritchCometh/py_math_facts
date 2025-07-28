@@ -17,18 +17,6 @@ class UserManager:
         self._user_path: Path
 
 
-    def load_user(self, user: str):
-
-        self._set_paths(user)
-
-        if not os.path.exists(self._user_path):
-            self.create_user(user)
-            return
-
-        with open(self._user_path, 'rb') as file:
-            self._ud = pickle.load(file)
-
-
     def create_user(self, user: str):
         
         self._set_paths(user)
@@ -46,6 +34,14 @@ class UserManager:
         
         self.save_user()
 
+
+    def load_user(self, user: str):
+
+        self._set_paths(user)
+
+        with open(self._user_path, 'rb') as file:
+            self._ud = pickle.load(file)
+
     
     def _set_paths(self, user: str):
 
@@ -55,11 +51,6 @@ class UserManager:
 
 
     def save_user(self):
-
-        if self._save_dir is None:
-            return
-        if self._user_path is None:
-            return
 
         os.makedirs(self._save_dir, exist_ok=True)
         with open(self._user_path, 'wb') as f:
@@ -117,5 +108,10 @@ class UserManager:
     @staticmethod
     def get_usernames() -> List[str]:
 
-        # Example user list, replace with actual logic
-        return ["user1", "user2", "user3"]
+        parent_dir = Path(__file__).resolve().parents[1]
+        save_dir = Path.joinpath(parent_dir, 'app_data')
+
+        if not save_dir.exists():
+            return []
+
+        return [f.stem for f in save_dir.glob('*.pkl') if f.is_file()]
