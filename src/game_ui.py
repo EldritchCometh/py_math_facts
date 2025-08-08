@@ -12,8 +12,10 @@ class GameUI(tk.Tk):
     def __init__(self, app):
         
         super().__init__()
-        
+
         self.app = app
+        self.user = app.user
+        self.facts = app.facts
 
         self.title("Math Facts")
         self.attributes('-type', 'dialog')

@@ -6,6 +6,7 @@ from tkinter import messagebox
 import tkinter.font as tkfont
 
 from src.password_ui import PasswordUI
+from src.options_ui import OptionsUI
 
 
 
@@ -28,8 +29,14 @@ class StartUI(tk.Tk):
         self._med_font = tkfont.Font(family=default_font.actual()["family"], size=14)
         self._small_font = tkfont.Font(family=default_font.actual()["family"], size=12)
         
+        style = ttk.Style()
+        style.configure('TButton', font=self._small_font, padding=10)
+
+        self.option_add("*Dialog.msg.font", self._small_font)
+        self.option_add("*Dialog.msg.wrapLength", "40c")
+        self.option_add("*Dialog.msg.wrap", "char")
+
         self._combobox: ttk.Combobox
-        self._main_button_text = tk.StringVar(value="Start")
         self._combobox_text = tk.StringVar(value="Select User")
 
         self._main_frame = tk.Frame(self)
@@ -68,84 +75,74 @@ class StartUI(tk.Tk):
         frame = tk.Frame(parent)
         frame.pack(expand=True, fill='both', pady=self._padding)
 
-        style = ttk.Style(self)
-        style.configure('TButton', font=self._med_font, padding=10)
-
-        main_button = ttk.Button(frame, text="⚙", style='TButton', command=self._on_settings_clicked, width=3)
-        cancel_button = ttk.Button(frame, textvariable=self._main_button_text, style='TButton', command=self._on_main_clicked, width=10)
         self._combobox = ttk.Combobox(
-            frame, values=self._user.get_usernames(), state="normal", 
-            font=self._med_font, textvariable=self._combobox_text)
+            frame, values=self._user.get_saved_users(), state="normal", 
+            font=self._small_font, textvariable=self._combobox_text)
+        create_btn = ttk.Button(frame, text="Create", style='TButton', command=self._on_create_clicked, width=10)
+        start_btn = ttk.Button(frame, text="Start", style='TButton', command=self._on_start_clicked, width=10)
+        options_btn = ttk.Button(frame, text="⚙", style='TButton', command=self._on_options_clicked, width=3)
         
-        main_button.pack(side='right', fill='y', padx=self._padding)
-        cancel_button.pack(side='right', fill='y', padx=self._padding)
+
+        options_btn.pack(side='right', fill='y', padx=self._padding)
+        start_btn.pack(side='right', fill='y', padx=self._padding)
+        create_btn.pack(side='right', fill='y', padx=self._padding)
         self._combobox.pack(side='right', fill='y', padx=self._padding)
-        self._combobox_text.trace_add('write', self._on_user_update)
-
-
-    def _on_settings_clicked(self):
-
-        cbbox_val = self._combobox_text.get()
-        if not cbbox_val or cbbox_val == "Select User":
-            return
-
-        if cbbox_val in self._user.get_usernames():
-            self._user.load_user(cbbox_val)
-        else:
-            return
-        PasswordUI(self._user)
-
-
-    def _on_main_clicked(self):
-
-        cbbox_val = self._combobox_text.get()
-        if not cbbox_val or cbbox_val == "Select User":
-            return
-        
-        if self._main_button_text.get() == "Create":
-            self._on_create_clicked()
-            return
-        elif self._main_button_text.get() == "Start":
-            self._on_start_clicked()
-            return
-    
-
-    def _on_user_update(self, *_):
-
-        cbbox_val = self._combobox_text.get()
-
-        if cbbox_val not in self._user.get_usernames():
-            self._main_button_text.set("Create")
-        else:
-            self._main_button_text.set("Start")
-
-
-    def _on_create_clicked(self):
-
-        cbbox_val = self._combobox.get()
-
-        errs = []
-        if not cbbox_val[0].isalpha():
-            errs.append("start with a letter")            
-        if len(cbbox_val) < 3:
-            errs.append("be at least three characters long")
-        whitelist = string.ascii_letters + string.digits + '_'
-        if not all(c in whitelist for c in cbbox_val):
-            errs.append("contain only letters, digits, and underscores")
-        if errs:
-            message = "Username should:\n" + "\n".join(f"  - {err}" for err in errs)
-            self.option_add("*Dialog.msg.font", self._small_font)
-            self.option_add("*Dialog.msg.wrapLength", "0")
-            messagebox.showinfo("Requirements", message)
-            return
-        
-        self._user.create_user(cbbox_val)
-        self._combobox['values'] = self._user.get_usernames()
-        self._on_user_update()
 
 
     def _on_start_clicked(self):
 
         cbbox_val = self._combobox.get()
+        if cbbox_val in self._user.get_saved_users():
+                self._user.load_saved_user(cbbox_val)
+        else:
+            return
         
-        self._user.load_user(cbbox_val)
+        self.destroy()
+
+    
+    def _on_create_clicked(self):
+
+        cbbox_val = self._combobox.get()
+        if not cbbox_val.strip():
+            return
+        if cbbox_val.strip() == "Select User":
+            return
+        if cbbox_val in self._user.get_saved_users():
+            return
+        
+        errs = []
+        if not cbbox_val[0].isalpha():
+            errs.append("begin with a letter")
+        if not any(c in string.ascii_letters for c in cbbox_val):
+            errs.append("contain at least one letter")
+        if any(c.isspace() for c in cbbox_val):
+            errs.append("not contain whitespace")
+        if len(cbbox_val) < 2:
+            errs.append("be at least two characters long")
+        whitelist = string.ascii_letters + string.digits + '_'
+        if not all(c in whitelist for c in cbbox_val):
+            errs.append("contain only letters, digits or underscores")
+        if errs:
+            message = "Username should:\n" + "\n".join(f"  - {err}" for err in errs)
+            messagebox.showinfo("Requirements", message)
+            return
+        
+        if PasswordUI().verify():
+            self._user.create_user(cbbox_val)
+            self._combobox['values'] = self._user.get_saved_users()
+
+
+    def _on_options_clicked(self):
+
+        cbbox_val = self._combobox.get()
+        if cbbox_val in self._user.get_saved_users():
+                self._user.load_saved_user(cbbox_val)
+        else:
+            return
+
+        if PasswordUI().verify():
+            options_ui = OptionsUI(self._user)
+            self.wait_window(options_ui)
+        
+        self._combobox['values'] = self._user.get_saved_users()
+        self._combobox.set("Select User")

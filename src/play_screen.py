@@ -2,7 +2,7 @@
 import time
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, List, Callable
+from typing import Dict, List
 import tkinter.font as tkFont
 
 
@@ -15,7 +15,8 @@ class PlayScreen(tk.Frame):
         
         self.gui = gui
         self.app = gui.app
-        self.mfs = gui.app.mfs
+        self.user = gui.user
+        self.facts = gui.facts
 
         self._gui_frame = tk.Frame(gui)
         self._frames: Dict[str, tk.Frame] = {}
@@ -36,7 +37,7 @@ class PlayScreen(tk.Frame):
                 widget.destroy()
             self._widgets = {}
 
-        for i, (t, f) in enumerate(zip(self.mfs.equation, self._eq_sub_frames)):
+        for i, (t, f) in enumerate(zip(self.facts.equation, self._eq_sub_frames)):
             if t == '_':
                 widget = tk.Entry(f, width=3, justify='center', font=self._font)
                 self._widgets['entry'] = widget
@@ -46,7 +47,7 @@ class PlayScreen(tk.Frame):
                 self._widgets[f'labels_{i}'] = widget
         
         prog_bar_names = ['timer', 'progress', 'mastery']
-        values = [0, self.mfs.percent_completed, self.mfs.percent_mastered]
+        values = [0, self.facts.percent_completed, self.facts.percent_mastered]
         for name, v in zip(prog_bar_names, values):
             bar = ttk.Progressbar(self._frames[f'{name}_frame'])
             bar.configure(orient='horizontal', mode='determinate')
@@ -101,24 +102,27 @@ class PlayScreen(tk.Frame):
 
 
     def _start_timer(self):
-        
+
+        if self.user.include_timers is False:
+            return
+
         self.stop_timer()
         timer_bar = self._widgets['timer_bar']
-        timer_bar['maximum'] = self.mfs.timer_duration
+        timer_bar['maximum'] = self.facts.timer_duration
         timer_bar['value'] = 0
         self._start_time = time.time()
 
-        if self.mfs.timer_duration == 0:
+        if not self.facts.timer_duration:
             return
 
         def update_timer():
             elapsed = time.time() - self._start_time
             timer_bar['value'] = elapsed
-            if elapsed < self.mfs.timer_duration:
+            if elapsed < self.facts.timer_duration:
                 self._after_ids['update_timer'] = \
                     self._gui_frame.after(10, update_timer)
             else:
-                timer_bar['value'] = self.mfs.timer_duration
+                timer_bar['value'] = self.facts.timer_duration
                 self.app._on_timeup()
 
         update_timer()
