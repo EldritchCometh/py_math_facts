@@ -10,19 +10,21 @@ from src.options_ui import OptionsUI
 
 
 
-class StartUI(tk.Tk):
+class StartUI(tk.Toplevel):
 
 
-    def __init__(self, user):
+    def __init__(self, app):
 
         super().__init__()
-        self._user = user
+        self._app = app
+        self._user = app.user
 
-        self.title("Math Facts")
+        self.title("Start UI")
         self.attributes('-type', 'dialog')
+        self.protocol("WM_DELETE_WINDOW", app.destroy)
 
         self._padding = 4
-        self._boarderwidth = 3
+        self._borderwidth = 3
 
         default_font = tkfont.nametofont("TkDefaultFont")
         self._big_font = tkfont.Font(family=default_font.actual()["family"], size=42, weight="bold")
@@ -31,6 +33,7 @@ class StartUI(tk.Tk):
         
         style = ttk.Style()
         style.configure('TButton', font=self._small_font, padding=10)
+        style.configure('TCombobox', font=self._small_font, padding=[12, 0, 0, 0])
 
         self.option_add("*Dialog.msg.font", self._small_font)
         self.option_add("*Dialog.msg.wrapLength", "40c")
@@ -50,7 +53,7 @@ class StartUI(tk.Tk):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_rowconfigure(1, weight=1)
 
-        welcome_frame = tk.Frame(parent, bd=self._boarderwidth, relief="groove")
+        welcome_frame = tk.Frame(parent, bd=self._borderwidth, relief="groove")
         widgets_frame = tk.Frame(parent)
 
         welcome_frame.grid(row=0, column=0, sticky='nsew', padx=self._padding, pady=self._padding)
@@ -82,7 +85,6 @@ class StartUI(tk.Tk):
         start_btn = ttk.Button(frame, text="Start", style='TButton', command=self._on_start_clicked, width=10)
         options_btn = ttk.Button(frame, text="⚙", style='TButton', command=self._on_options_clicked, width=3)
         
-
         options_btn.pack(side='right', fill='y', padx=self._padding)
         start_btn.pack(side='right', fill='y', padx=self._padding)
         create_btn.pack(side='right', fill='y', padx=self._padding)
@@ -97,38 +99,23 @@ class StartUI(tk.Tk):
         else:
             return
         
-        self.destroy()
+        self._app.on_start_clicked()
 
     
     def _on_create_clicked(self):
 
         cbbox_val = self._combobox.get()
-        if not cbbox_val.strip():
-            return
-        if cbbox_val.strip() == "Select User":
-            return
-        if cbbox_val in self._user.get_saved_users():
-            return
         
-        errs = []
-        if not cbbox_val[0].isalpha():
-            errs.append("begin with a letter")
-        if not any(c in string.ascii_letters for c in cbbox_val):
-            errs.append("contain at least one letter")
-        if any(c.isspace() for c in cbbox_val):
-            errs.append("not contain whitespace")
-        if len(cbbox_val) < 2:
-            errs.append("be at least two characters long")
-        whitelist = string.ascii_letters + string.digits + '_'
-        if not all(c in whitelist for c in cbbox_val):
-            errs.append("contain only letters, digits or underscores")
+        valid, errs = self._validate_username(cbbox_val)
         if errs:
             message = "Username should:\n" + "\n".join(f"  - {err}" for err in errs)
             messagebox.showinfo("Requirements", message)
             return
-        
+        if not valid:
+            return
+
         if PasswordUI().verify():
-            self._user.create_user(cbbox_val)
+            self._user.create_new_user(cbbox_val)
             self._combobox['values'] = self._user.get_saved_users()
 
 
@@ -143,6 +130,34 @@ class StartUI(tk.Tk):
         if PasswordUI().verify():
             options_ui = OptionsUI(self._user)
             self.wait_window(options_ui)
-        
+    
         self._combobox['values'] = self._user.get_saved_users()
         self._combobox.set("Select User")
+
+
+    def _validate_username(self, cbbox_val: str) -> tuple[bool, list[str]]:
+
+        if not cbbox_val.strip():
+            return False, ["Username cannot be empty"]
+        if cbbox_val.strip() == "Select User":
+            return False, []
+        if cbbox_val in self._user.get_saved_users():
+            return False, []
+
+        errs = []
+        if not cbbox_val[0].isalpha():
+            errs.append("begin with a letter")
+        if not any(c in string.ascii_letters for c in cbbox_val):
+            errs.append("contain at least one letter")
+        if any(c.isspace() for c in cbbox_val):
+            errs.append("not contain whitespace")
+        if len(cbbox_val) < 2:
+            errs.append("be at least two characters long")
+        whitelist = string.ascii_letters + string.digits + '_'
+        if not all(c in whitelist for c in cbbox_val):
+            errs.append("contain only letters, digits or underscores")
+        
+        if errs:
+            return False, errs
+        else:
+            return True, []

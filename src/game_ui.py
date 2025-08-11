@@ -6,13 +6,12 @@ from src.ready_screen import ReadyScreen
 
 
 
-class GameUI(tk.Tk):
+class GameUI(tk.Toplevel):
 
 
     def __init__(self, app):
         
         super().__init__()
-
         self.app = app
         self.user = app.user
         self.facts = app.facts

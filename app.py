@@ -1,22 +1,5 @@
 
 # todo:
-# - add interfaces for everything instead of dictionary access
-# - password window changes sizes when label changes
-# - shuffle facts_maker facts_manager and user_managers methods
-# - refactor factmaker to only produce basic facts
-# - implement create_user and num_probs
-# - finish implementing settings from usermanager into settings_ui
-# - order everything properly in settings_ui
-# - remove create from start_ui
-# - add create to settings_ui
-# - test full grid on settings_ui
-# - add num probs to settings_ui
-# - add an indent to the text in combobox
-# - add return to the entry widgets
-# - make sure all entry widgets are focused when the window opens
-# - fill in demo stuff in usermanager
-# - double check on the last lines in _on_create_clicked in start_ui
-# - evaluate whether all of the keys in facts_manager dict are necessary
 # - spell check all dialogue messages
 # - see if i can make clicking on the combobox highlight all text
 # - make it more difficult to hack than just deleting the password file
@@ -33,7 +16,12 @@
 # - turn the password back on
 # - add a results screen
 # - ready_screen label too close to horozontal walls
+# - add a cencel button to password_ui
+# - check for using all imported modules
+# - fix 4 level indentation in _is_mastered
 
+
+import tkinter as tk
 
 from src.start_ui import StartUI
 from src.game_ui import GameUI
@@ -42,43 +30,55 @@ from src.facts_manager import FactsManager
 
 
 
-class MathFactsApp:
-
+class MathFactsApp(tk.Tk):
 
     def __init__(self):
 
-        self.user = UserManager()
-        sui = StartUI(self.user)
-        sui.mainloop()
-        if not self.user.user_loaded:
-            return
-        self.facts = FactsManager(self.user)
-        self.gui = GameUI(self)
+        super().__init__()
+        self.withdraw()
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
         
-        self.gui.mainloop()
+        self.user = UserManager()
+        self.sui = StartUI(self)
+        
+        self.mainloop()
 
 
-    def _on_start(self, _):
+    def on_start_clicked(self):
+
+        self.sui.withdraw()
+        self.facts = FactsManager(self)
+        self.gui = GameUI(self)
+        self.sui.wait_window(self.gui)
+        self.sui.deiconify()
+
+
+    def on_ready_acknowledged(self, _):
     
         self.gui.set_screen(self.gui.play_screen)
 
 
-    def _on_return(self, event):
+    def on_return(self, event):
 
         try:
-            return_value = event.widget.get()
-            return_value = int(return_value)
+            entry_value = event.widget.get()
+            entry_value = int(entry_value)
         except:
             return
+        
+        if entry_value == self.facts.solution:
+            answered_correctly = True
+        else:
+            answered_correctly = False
 
-        if return_value != self.facts.solution:
-            self.facts.update_mastery(answered_correctly=False)
+        if entry_value != self.facts.solution:
+            self.facts.process_submission(answered_correctly)
             self.gui.play_screen.stop_timer()
             return
 
-        self.facts.update_mastery(answered_correctly=True)
+        self.facts.process_submission(answered_correctly)
 
-        if self.facts.remaining:
+        if self.facts.percent_completed < 1.0:
             self.facts.set_next()
             self.gui.set_screen(self.gui.play_screen)
             return
@@ -86,10 +86,10 @@ class MathFactsApp:
         self.gui.destroy()
 
 
-    def _on_timeup(self):
+    def on_time_up(self):
 
-        self.facts.update_mastery(answered_correctly=False)
+        self.facts.process_submission(is_correct=False)
 
 
-    
+
 mfa = MathFactsApp()

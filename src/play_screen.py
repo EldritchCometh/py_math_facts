@@ -30,6 +30,30 @@ class PlayScreen(tk.Frame):
         self._make_layout()
 
 
+    def _make_layout(self):
+
+        frame_names = ['equation_frame', 'timer_frame', 
+                       'progress_frame', 'mastery_frame']
+        row_weights = [12, 1, 1, 1]
+        frame_padys = [(4, 2), (2, 2), (2, 2), (2, 2)]
+        self._gui_frame.grid_columnconfigure(0, weight=1)
+        arg_lists = zip(frame_names, row_weights, frame_padys)
+        for i, (name, weight, pady) in enumerate(arg_lists):
+            frame = tk.Frame(self._gui_frame, borderwidth=5, relief='raised')
+            self._frames[name] = frame
+            self._gui_frame.grid_rowconfigure(i, weight=weight)    
+            frame.grid(row=i, column=0, sticky="nsew", padx=4, pady=pady)
+            frame.pack_propagate(False)
+            
+        eq_inner_frame = tk.Frame(self._frames['equation_frame'])
+        self._eq_sub_frames = [tk.Frame(eq_inner_frame) for _ in range(5)]
+        eq_inner_frame.grid_rowconfigure(0, weight=1)
+        for i, sf in enumerate(self._eq_sub_frames):
+            eq_inner_frame.grid_columnconfigure(i, weight=1)
+            sf.grid(row=0, column=i, sticky="nsew", padx=2, pady=2)
+        eq_inner_frame.pack(expand=True, fill='both')
+
+
     def populate(self):
 
         if self._widgets:
@@ -55,8 +79,8 @@ class PlayScreen(tk.Frame):
             bar['maximum'], bar['value'] = 1000, v * 1000
         
         self._start_timer()
-        self._widgets['entry'].bind('<Return>', self.app._on_return)
-        self._widgets['entry'].bind('<KP_Enter>', self.app._on_return)
+        self._widgets['entry'].bind('<Return>', self.app.on_return)
+        self._widgets['entry'].bind('<KP_Enter>', self.app.on_return)
 
         for widget in self._widgets.values():
             widget.pack(expand=True, fill='both')
@@ -103,18 +127,19 @@ class PlayScreen(tk.Frame):
 
     def _start_timer(self):
 
-        if self.user.include_timers is False:
+        if self.user.inc_timers is False:
             return
 
+        timer_duration = self.facts.timer_duration        
         self.stop_timer()
         timer_bar = self._widgets['timer_bar']
-        timer_bar['maximum'] = self.facts.timer_duration
+        timer_bar['maximum'] = timer_duration
         timer_bar['value'] = 0
         self._start_time = time.time()
 
-        if not self.facts.timer_duration:
+        if not timer_duration:
             return
-
+       
         def update_timer():
             elapsed = time.time() - self._start_time
             timer_bar['value'] = elapsed
@@ -123,30 +148,6 @@ class PlayScreen(tk.Frame):
                     self._gui_frame.after(10, update_timer)
             else:
                 timer_bar['value'] = self.facts.timer_duration
-                self.app._on_timeup()
-
+                self.app.on_time_up()
         update_timer()
 
-
-    def _make_layout(self):
-
-        frame_names = ['equation_frame', 'timer_frame', 
-                       'progress_frame', 'mastery_frame']
-        row_weights = [12, 1, 1, 1]
-        frame_padys = [(4, 2), (2, 2), (2, 2), (2, 2)]
-        self._gui_frame.grid_columnconfigure(0, weight=1)
-        arg_lists = zip(frame_names, row_weights, frame_padys)
-        for i, (name, weight, pady) in enumerate(arg_lists):
-            frame = tk.Frame(self._gui_frame, borderwidth=5, relief='raised')
-            self._frames[name] = frame
-            self._gui_frame.grid_rowconfigure(i, weight=weight)    
-            frame.grid(row=i, column=0, sticky="nsew", padx=4, pady=pady)
-            frame.pack_propagate(False)
-            
-        eq_inner_frame = tk.Frame(self._frames['equation_frame'])
-        self._eq_sub_frames = [tk.Frame(eq_inner_frame) for _ in range(5)]
-        eq_inner_frame.grid_rowconfigure(0, weight=1)
-        for i, sf in enumerate(self._eq_sub_frames):
-            eq_inner_frame.grid_columnconfigure(i, weight=1)
-            sf.grid(row=0, column=i, sticky="nsew", padx=2, pady=2)
-        eq_inner_frame.pack(expand=True, fill='both')

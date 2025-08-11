@@ -10,7 +10,6 @@ import hashlib
 import string
 import tkinter.font as tkfont
 
-from src.options_ui import OptionsUI
 from src.utils.common_passhashes import common_passhashes
 
 
@@ -103,6 +102,9 @@ class PasswordUI(tk.Toplevel):
 
         self.password_entry = tk.Entry(frame, show='*', font=self._med_font)
         self.password_entry.pack(fill='both', expand=True, pady=self._padding)
+        self.password_entry.focus_set()
+        f = self._on_verify_clicked if self._pass_exists else self._on_create_clicked
+        self.password_entry.bind('<Return>', lambda _: f())
 
 
     def _button_frame(self, parent):
@@ -113,30 +115,32 @@ class PasswordUI(tk.Toplevel):
         text = "Verify" if self._pass_exists else "Create"
         f = self._on_verify_clicked if self._pass_exists else self._on_create_clicked
         self._main_btn = ttk.Button(frame, text=text, style="TButton", command=f, width=10)
-     
+        self._cancel_btn = ttk.Button(frame, text="Cancel", style="TButton", command=self.destroy, width=10)
+        
         self._main_btn.pack(side="right", fill='y', padx=self._padding)
-       
-
+        self._cancel_btn.pack(side="right", fill='y', padx=self._padding)
+        
+        
     def _on_verify_clicked(self):
         
-        # password = self.password_entry.get()
-        # if not password:
-        #     return
-        # self.password_entry.delete(0, tk.END)
+        password = self.password_entry.get()
+        if not password:
+            return
+        self.password_entry.delete(0, tk.END)
         
-        # hash_value = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        hash_value = hashlib.sha256(password.encode('utf-8')).hexdigest()
         
-        # try:
-        #     with open(self._pass_path, 'r') as f:
-        #         stored_hash = f.read().strip()
-        # except (OSError, IOError) as e:
-        #     messagebox.showerror("Error", f"Failed to read password file: {e}")
-        #     return
+        try:
+            with open(self._pass_path, 'r') as f:
+                stored_hash = f.read().strip()
+        except (OSError, IOError) as e:
+            messagebox.showerror("Error", f"Failed to read password file: {e}")
+            return
         
-        # if hash_value != stored_hash:
-        #     messagebox.showerror("Error", "Incorrect")
-        #     self.password_entry.delete(0, tk.END)
-        #     return
+        if hash_value != stored_hash:
+            messagebox.showerror("Error", "Incorrect")
+            self.password_entry.delete(0, tk.END)
+            return
         
         self._verified = True
         self.destroy()
@@ -149,47 +153,34 @@ class PasswordUI(tk.Toplevel):
             return
         self.password_entry.delete(0, tk.END)
 
+        format_errs, strength_err = self._validate_password(password)
+        if format_errs:
+            message = "Password should:\n" 
+            message += "\n".join(f"  - {err}" for err in format_errs)
+            messagebox.showinfo("Format Warning", message)
+            self.password_entry.delete(0, tk.END)
+            return
+        if strength_err:
+            message = strength_err + (
+                "\nTips for a strong, memorable password:\n"
+                "- Use camel-cased, alliterative nonsense words.\n"
+                "- Add a short, meaningful number sequence.\n"
+                "- Include one punctuation mark.\n"
+                "- Examples: 'MeanMrMustard42!', 'LizardLordLargess@67'")
+            messagebox.showwarning("Strength Warning", message)
+            return
+
         if self._new_pass and password != self._new_pass:
             messagebox.showerror("Error", "Entries did not match.")
             self._new_pass = ''
             self.password_entry.delete(0, tk.END)
             self._label_text.set("Create Password:")
             return
-
-        errs = []
-        if any(c.isspace() for c in password):
-            errs.append("not contain whitespace")
-        if len(password) < 4:
-            errs.append("be at least four characters long")
-        whitelist = string.ascii_letters + string.digits + string.punctuation + '_'
-        if not all(c in whitelist for c in password):
-            errs.append("contain only letters, digits, underscores, and punctuation")      
-        if errs:
-            message = "Password should:\n" + "\n".join(f"  - {err}" for err in errs)
-            messagebox.showinfo("Requirements", message)
-            self.password_entry.delete(0, tk.END)
-            return
-        
-        err = ''
-        if PasswordUI._hash(password) in common_passhashes:
-            err = "This is a very common password.\n"
-        elif not self.shannon_password_check(password):
-            err = "This is a very weak password.\n"
-        if err:
-            err += (
-                "\nTips for a strong, memorable password:\n"
-                "- Use camel-cased, alliterative nonsense words.\n"
-                "- Add a short, meaningful number sequence.\n"
-                "- Include one punctuation mark.\n"
-                "- Examples: 'MeanMrMustard42!', 'LizardLordLargess@67'"
-            )
-            messagebox.showwarning("Weak Password Warning", err)
-            return
         
         if not self._new_pass:
             self._new_pass = password
             self.password_entry.delete(0, tk.END)
-            self._label_text.set("Retype New Password:")
+            self._label_text.set("Retype Password:")
             return
         
         try:
@@ -204,20 +195,30 @@ class PasswordUI(tk.Toplevel):
         self._verified = True
         self.destroy()
 
-    @staticmethod
-    def _hash(password):
-        
-        encoded = password.encode()
-        sha_256 = hashlib.sha256(encoded).digest()
-        base_64 = base64.b64encode(sha_256).decode()
-        return base_64[:6]
+    
+    def _validate_password(self, password):
 
+        format_errs = []
+        if any(c.isspace() for c in password):
+            format_errs.append("not contain whitespace")
+        if len(password) < 6:
+            format_errs.append("be at least six characters long")
+        whitelist = string.ascii_letters + string.digits + string.punctuation + '_'
+        if not all(c in whitelist for c in password):
+            format_errs.append("contain only letters, digits, underscores, and punctuation")      
+
+        strength_err = ''        
+        if PasswordUI._hash(password) in common_passhashes:
+            strength_err = "This is a very common password.\n"
+        elif not self.shannon_password_check(password):
+            strength_err = "This is a very weak password.\n"
+
+        return format_errs, strength_err
+        
 
     @staticmethod
     def shannon_password_check(password):
         
-        if not password:
-            return False
         char_count = len(password)
         freq = {}
         for char in password:
@@ -229,3 +230,11 @@ class PasswordUI(tk.Toplevel):
         total_entropy = entropy_per_char * char_count
         return total_entropy > 20
     
+
+    @staticmethod
+    def _hash(password):
+        
+        encoded = password.encode()
+        sha_256 = hashlib.sha256(encoded).digest()
+        base_64 = base64.b64encode(sha_256).decode()
+        return base_64[:6]

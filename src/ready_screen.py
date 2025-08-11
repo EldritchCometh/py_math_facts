@@ -22,6 +22,12 @@ class ReadyScreen(tk.Frame):
         self._make_layout()
 
 
+    def _make_layout(self):
+
+        self._start_message_frame = tk.Frame(self._gui_frame)
+        self._start_message_frame.pack(expand=True, fill='both')
+
+
     def populate(self):
 
         start_message_label = tk.Label(
@@ -29,14 +35,8 @@ class ReadyScreen(tk.Frame):
             font=self._font)
         start_message_label.pack(expand=True, fill='both')
         start_message_label.focus_set()
-        start_message_label.bind('<Return>', self.app._on_start)
-        start_message_label.bind('<KP_Enter>', self.app._on_start)
-
-
-    def _make_layout(self):
-
-        self._start_message_frame = tk.Frame(self._gui_frame)
-        self._start_message_frame.pack(expand=True, fill='both')
+        start_message_label.bind('<Return>', self.app.on_ready_acknowledged)
+        start_message_label.bind('<KP_Enter>', self.app.on_ready_acknowledged)
 
 
     def resize(self):
@@ -68,3 +68,4 @@ class ReadyScreen(tk.Frame):
 
         final_size = min(int(w_size), int(h_size))
         self._font.configure(size=final_size)
+
