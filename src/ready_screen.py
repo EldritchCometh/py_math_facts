@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 
+
 class ReadyScreen(tk.Frame):
 
    
@@ -22,13 +23,13 @@ class ReadyScreen(tk.Frame):
         self._make_layout()
 
 
-    def _make_layout(self):
+    def _make_layout(self) -> None:
 
         self._start_message_frame = tk.Frame(self._gui_frame)
         self._start_message_frame.pack(expand=True, fill='both')
 
 
-    def populate(self):
+    def populate(self) -> None:
 
         start_message_label = tk.Label(
             self._start_message_frame, text=self._start_message, 
@@ -39,7 +40,7 @@ class ReadyScreen(tk.Frame):
         start_message_label.bind('<KP_Enter>', self.app.on_ready_acknowledged)
 
 
-    def resize(self):
+    def resize(self) -> None:
 
         new_window_size = (self.gui.winfo_width(), self.gui.winfo_height())
         if new_window_size == self._window_size:

@@ -2,9 +2,8 @@
 import os
 import pickle
 from pathlib import Path
-from typing import Any, List, Dict
-from copy import deepcopy as copy
-from src.facts_maker import FactsMaker
+from typing import List, Dict, Any
+from .facts_maker import FactsMaker
 
 
 
@@ -28,7 +27,7 @@ class UserManager:
         self._user_path: Path
 
 
-    def create_new_user(self, user: str):
+    def create_new_user(self, user: str) -> None:
 
         self.user_name = user
         self.inc_nums = {k: True for k in range(13)}
@@ -44,11 +43,12 @@ class UserManager:
         self.save_user_data()
 
 
-    def load_saved_user(self, user: str):
+    def load_saved_user(self, user: str) -> None:
 
         self._set_path_attributes(user)
         if not self._user_path.exists():
-            raise FileNotFoundError(f"user does not exist at {self._user_path}")
+            raise FileNotFoundError(
+                f"user does not exist at {self._user_path}")
         with open(self._user_path, 'rb') as file:
             user_data = pickle.load(file)
 
@@ -64,7 +64,7 @@ class UserManager:
         self.user_loaded = True
 
 
-    def save_user_data(self):
+    def save_user_data(self) -> None:
 
         self._set_path_attributes(self.user_name)
         if not self.user_loaded:
@@ -86,14 +86,14 @@ class UserManager:
             pickle.dump(user_data, f)
 
 
-    def _set_path_attributes(self, user_name: str):
+    def _set_path_attributes(self, user_name: str) -> None:
 
         parent_dir = Path(__file__).resolve().parents[1]
         self._save_dir = Path.joinpath(parent_dir, 'app_data')
         self._user_path = Path.joinpath(self._save_dir, f'{user_name}.pkl')
 
 
-    def delete_current_user(self):
+    def delete_current_user(self) -> None:
 
         if not self.user_loaded:
             raise ValueError("no user loaded, cannot delete")

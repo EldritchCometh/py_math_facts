@@ -1,9 +1,8 @@
 
-import string
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-import tkinter.font as tkfont
+from tkinter import ttk, messagebox
+from tkinter import font as tkfont
+import string
 
 from src.password_ui import PasswordUI
 from src.options_ui import OptionsUI
@@ -23,17 +22,22 @@ class StartUI(tk.Toplevel):
         self.attributes('-type', 'dialog')
         self.protocol("WM_DELETE_WINDOW", app.destroy)
 
-        self._padding = 4
+        self._pad = 4
         self._borderwidth = 3
 
         default_font = tkfont.nametofont("TkDefaultFont")
-        self._big_font = tkfont.Font(family=default_font.actual()["family"], size=42, weight="bold")
-        self._med_font = tkfont.Font(family=default_font.actual()["family"], size=14)
-        self._small_font = tkfont.Font(family=default_font.actual()["family"], size=12)
+        self._big_font = tkfont.Font(
+            family=default_font.actual()["family"], size=42, weight="bold")
+        self._med_font = tkfont.Font(
+            family=default_font.actual()["family"], size=14)
+        self._small_font = tkfont.Font(
+            family=default_font.actual()["family"], size=12)
         
         style = ttk.Style()
         style.configure('TButton', font=self._small_font, padding=10)
-        style.configure('TCombobox', font=self._small_font, padding=[12, 0, 0, 0])
+        style.configure(
+            'TCombobox', font=self._small_font, 
+            padding=[12, 0, 0, 0], arrowsize=24)
 
         self.option_add("*Dialog.msg.font", self._small_font)
         self.option_add("*Dialog.msg.wrapLength", "40c")
@@ -47,7 +51,7 @@ class StartUI(tk.Toplevel):
         self._main_frame.pack(expand=True, fill='both', padx=4, pady=4)
 
 
-    def _make_layout(self, parent):
+    def _make_layout(self, parent) -> None:
 
         parent.grid_columnconfigure(0, weight=1)
         parent.grid_rowconfigure(0, weight=1)
@@ -56,42 +60,53 @@ class StartUI(tk.Toplevel):
         welcome_frame = tk.Frame(parent, bd=self._borderwidth, relief="groove")
         widgets_frame = tk.Frame(parent)
 
-        welcome_frame.grid(row=0, column=0, sticky='nsew', padx=self._padding, pady=self._padding)
-        widgets_frame.grid(row=1, column=0, sticky='nsew', padx=self._padding, pady=self._padding)
+        welcome_frame.grid(
+            row=0, column=0, sticky='nsew', padx=self._pad, pady=self._pad)
+        widgets_frame.grid(
+            row=1, column=0, sticky='nsew', padx=self._pad, pady=self._pad)
 
         self._welcome_frame(welcome_frame)
         self._widgets_frame(widgets_frame)
 
 
-    def _welcome_frame(self, parent):
+    def _welcome_frame(self, parent) -> None:
 
         frame = tk.Frame(parent)
         frame.pack(expand=True, fill='both')
 
         message = "Welcome to Math Facts!"
         title_label = tk.Label(frame, text=message, font=self._big_font)
-        title_label.pack(fill='both', expand=True, padx=18, pady=self._padding)
+        title_label.pack(fill='both', expand=True, padx=18, pady=self._pad)
 
 
-    def _widgets_frame(self, parent):
+    def _widgets_frame(self, parent) -> None:
 
         frame = tk.Frame(parent)
-        frame.pack(expand=True, fill='both', pady=self._padding)
+        frame.pack(expand=True, fill='both', pady=self._pad)
 
         self._combobox = ttk.Combobox(
             frame, values=self._user.get_saved_users(), state="normal", 
             font=self._small_font, textvariable=self._combobox_text)
-        create_btn = ttk.Button(frame, text="Create", style='TButton', command=self._on_create_clicked, width=10)
-        start_btn = ttk.Button(frame, text="Start", style='TButton', command=self._on_start_clicked, width=10)
-        options_btn = ttk.Button(frame, text="⚙", style='TButton', command=self._on_options_clicked, width=3)
+        create_btn = ttk.Button(
+            frame, text="Create", style='TButton', 
+            command=self._on_create_clicked, width=10)
+        start_btn = ttk.Button(
+            frame, text="Start", style='TButton', 
+            command=self._on_start_clicked, width=10)
+        options_btn = ttk.Button(
+            frame, text="⚙", style='TButton', 
+            command=self._on_options_clicked, width=3)
         
-        options_btn.pack(side='right', fill='y', padx=self._padding)
-        start_btn.pack(side='right', fill='y', padx=self._padding)
-        create_btn.pack(side='right', fill='y', padx=self._padding)
-        self._combobox.pack(side='right', fill='y', padx=self._padding)
+        options_btn.pack(side='right', fill='y', padx=self._pad)
+        start_btn.pack(side='right', fill='y', padx=self._pad)
+        create_btn.pack(side='right', fill='y', padx=self._pad)
+        self._combobox.pack(side='right', fill='y', padx=self._pad)
+        self._combobox.bind(
+            "<ButtonRelease-1>", 
+            lambda _: self._combobox.select_range(0, tk.END))
 
 
-    def _on_start_clicked(self):
+    def _on_start_clicked(self) -> None:
 
         cbbox_val = self._combobox.get()
         if cbbox_val in self._user.get_saved_users():
@@ -102,13 +117,14 @@ class StartUI(tk.Toplevel):
         self._app.on_start_clicked()
 
     
-    def _on_create_clicked(self):
+    def _on_create_clicked(self) -> None:
 
         cbbox_val = self._combobox.get()
         
         valid, errs = self._validate_username(cbbox_val)
         if errs:
-            message = "Username should:\n" + "\n".join(f"  - {err}" for err in errs)
+            message = "Username should:\n" 
+            message += "\n".join(f"  - {err}" for err in errs)
             messagebox.showinfo("Requirements", message)
             return
         if not valid:
@@ -119,7 +135,7 @@ class StartUI(tk.Toplevel):
             self._combobox['values'] = self._user.get_saved_users()
 
 
-    def _on_options_clicked(self):
+    def _on_options_clicked(self) -> None:
 
         cbbox_val = self._combobox.get()
         if cbbox_val in self._user.get_saved_users():
@@ -132,7 +148,8 @@ class StartUI(tk.Toplevel):
             self.wait_window(options_ui)
     
         self._combobox['values'] = self._user.get_saved_users()
-        self._combobox.set("Select User")
+        self._combobox_text.set("Select User")
+        self._combobox.select_range(0, tk.END)
 
 
     def _validate_username(self, cbbox_val: str) -> tuple[bool, list[str]]:

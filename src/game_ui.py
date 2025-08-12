@@ -1,8 +1,8 @@
 
 import tkinter as tk
 
-from src.play_screen import PlayScreen
 from src.ready_screen import ReadyScreen
+from src.play_screen import PlayScreen
 
 
 
@@ -32,7 +32,7 @@ class GameUI(tk.Toplevel):
         self.set_screen(self.ready_screen)
 
 
-    def set_screen(self, screen):
+    def set_screen(self, screen) -> None:
 
         if self.screen is not None:
             self.screen._gui_frame.pack_forget()
@@ -46,7 +46,7 @@ class GameUI(tk.Toplevel):
         self._bind_with_debounce('<Configure>', lambda _: screen.resize())
 
 
-    def _bind_with_debounce(self, event_type, func):
+    def _bind_with_debounce(self, event_type, func) -> None:
 
         def handler(event):
             if func.__name__ in self.after_ids:

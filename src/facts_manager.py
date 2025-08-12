@@ -1,9 +1,6 @@
 
-from copy import deepcopy as copy
-from itertools import product
-import math
-from operator import add, mul, sub, truediv
 import random
+from copy import copy
 from typing import Any, Dict, List, Tuple
 
 
@@ -34,12 +31,12 @@ class FactsManager:
         self.set_next()
 
 
-    def _set_all_facts(self):
+    def _set_all_facts(self) -> None:
 
         self._all_facts = self._user.facts
 
 
-    def _set_retained_facts(self):
+    def _set_retained_facts(self) -> None:
 
         inc_nums = [k for k, v in self._user.inc_nums.items() if v]
 
@@ -54,13 +51,15 @@ class FactsManager:
             self._retained.append(v)
 
 
-    def _set_mastered_and_unmastered_facts(self):
+    def _set_mastered_and_unmastered_facts(self) -> None:
         
-        self._mastered = [f for f in self._retained if self._is_mastered(f)]
-        self._unmastered = [f for f in self._retained if not self._is_mastered(f)]
+        self._mastered = \
+            [f for f in self._retained if self._is_mastered(f)]
+        self._unmastered = \
+            [f for f in self._retained if not self._is_mastered(f)]
 
 
-    def set_next(self):
+    def set_next(self) -> None:
 
         if not self._unmastered:
             self._app._on_all_facts_mastered()
@@ -119,20 +118,21 @@ class FactsManager:
         if not self._is_mastered(self._current_fact):
             if self._current_working_list == self._mastered:
                 self._current_working_list.remove(self._current_fact)
-                self._unmastered.append(self._current_fact)
+                self._unmastered.insert(0, self._current_fact)
 
 
     def _is_mastered(self, fact: Dict[str, Any]) -> bool:
 
-        if not hasattr(self, '_mastered_threshold'):
-            if not self._user.inc_timers:
-                self._mastered_threshold = 1
-            else:                
-                threshold = len(self._user.timer_vals)
-                if self._user.inc_untimed:
-                    threshold += 1
-                self._mastered_threshold = threshold
-
+        if hasattr(self, '_mastered_threshold'):
+            return fact['mastery'] >= self._mastered_threshold
+        
+        if not self._user.inc_timers:
+            self._mastered_threshold = 1
+        else:                
+            threshold = len(self._user.timer_vals)
+            if self._user.inc_untimed:
+                threshold += 1
+            self._mastered_threshold = threshold
         return fact['mastery'] >= self._mastered_threshold
 
 

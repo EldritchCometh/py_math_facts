@@ -1,9 +1,11 @@
 
-import time
 import tkinter as tk
 from tkinter import ttk
+import time
 from typing import Dict, List
+
 import tkinter.font as tkFont
+
 
 
 class PlayScreen(tk.Frame):
@@ -30,7 +32,7 @@ class PlayScreen(tk.Frame):
         self._make_layout()
 
 
-    def _make_layout(self):
+    def _make_layout(self) -> None:
 
         frame_names = ['equation_frame', 'timer_frame', 
                        'progress_frame', 'mastery_frame']
@@ -54,14 +56,15 @@ class PlayScreen(tk.Frame):
         eq_inner_frame.pack(expand=True, fill='both')
 
 
-    def populate(self):
+    def populate(self) -> None:
 
         if self._widgets:
             for widget in self._widgets.values():
                 widget.destroy()
             self._widgets = {}
 
-        for i, (t, f) in enumerate(zip(self.facts.equation, self._eq_sub_frames)):
+        zipped = zip(self.facts.equation, self._eq_sub_frames)
+        for i, (t, f) in enumerate(zipped):
             if t == '_':
                 widget = tk.Entry(f, width=3, justify='center', font=self._font)
                 self._widgets['entry'] = widget
@@ -86,7 +89,7 @@ class PlayScreen(tk.Frame):
             widget.pack(expand=True, fill='both')
 
 
-    def resize(self):
+    def resize(self) -> None:
 
         new_window_size = (self.gui.winfo_width(), self.gui.winfo_height())
         if new_window_size == self._window_size:
@@ -117,7 +120,7 @@ class PlayScreen(tk.Frame):
         self._font.configure(size=final_size)
 
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
 
         if 'update_timer' in self._after_ids:
             after_id = self._after_ids.pop('update_timer')
@@ -125,7 +128,7 @@ class PlayScreen(tk.Frame):
                 self._gui_frame.after_cancel(after_id)
 
 
-    def _start_timer(self):
+    def _start_timer(self) -> None:
 
         if self.user.inc_timers is False:
             return

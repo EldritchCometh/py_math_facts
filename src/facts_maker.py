@@ -1,7 +1,7 @@
 
-from copy import deepcopy as copy
-from operator import add, mul, sub, truediv
 from typing import Dict
+from copy import copy
+from operator import add, sub, mul, truediv
 
 
 
@@ -21,7 +21,7 @@ class FactsMaker():
         self._dict = {i: {**v, 'id': i} for i, v in enumerate(self._facts)}
 
 
-    def _append_addition_facts(self, terms):
+    def _append_addition_facts(self, terms) -> None:
 
         for (t1, t2) in terms:
             r = add(t1, t2)
@@ -33,7 +33,7 @@ class FactsMaker():
                 'mastery': 0 })
 
 
-    def _append_subtraction_facts(self, terms):
+    def _append_subtraction_facts(self, terms) -> None:
 
         for (t1, t2) in terms:
             r = sub(t1, t2)
@@ -45,7 +45,7 @@ class FactsMaker():
                 'mastery': 0 })
             
     
-    def _append_multiplication_facts(self, terms):
+    def _append_multiplication_facts(self, terms) -> None:
 
         for (t1, t2) in terms:
             r = mul(t1, t2)
@@ -57,7 +57,7 @@ class FactsMaker():
                 'mastery': 0 })
 
 
-    def _append_division_facts(self, terms):
+    def _append_division_facts(self, terms) -> None:
         
         for (t1, t2) in terms:
             if t2 == 0:
@@ -76,11 +76,3 @@ class FactsMaker():
     def get_facts(self) -> Dict[int, Dict]:
 
         return copy(self._dict)
-
-
-# for i, mf in enumerate(self._facts):
-#     threshold = len(self._facts) / 99
-#     difficulty = int(round(i / threshold))
-#     mf['difficulty'] = difficulty
-#     mf['mastery'] = 0
-#     mf['mastered'] = False

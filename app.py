@@ -1,32 +1,10 @@
 
-# todo:
-# - spell check all dialogue messages
-# - see if i can make clicking on the combobox highlight all text
-# - make it more difficult to hack than just deleting the password file
-# - put all the stuff in options_ui in the right order
-# - make the order in settings match the order in options_ui
-# - maybe use fuller names for methods in options_ui
-# - maybe add explicit types everywhere
-# - address all lines over 80 characters
-# - sometimes select is highlighted in select username when I leave options_ui
-# - change timers to timer_vals
-# - probe and test accurate recording of progress
-# - make the start button in start_ui call a method in MathFactsApp
-# - look into closing options_ui always deselecting the combobox
-# - turn the password back on
-# - add a results screen
-# - ready_screen label too close to horozontal walls
-# - add a cencel button to password_ui
-# - check for using all imported modules
-# - fix 4 level indentation in _is_mastered
-
-
 import tkinter as tk
 
-from src.start_ui import StartUI
-from src.game_ui import GameUI
 from src.user_manager import UserManager
+from src.start_ui import StartUI
 from src.facts_manager import FactsManager
+from src.game_ui import GameUI
 
 
 
