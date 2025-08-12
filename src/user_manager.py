@@ -34,7 +34,7 @@ class UserManager:
         self.inc_oprs = {'add': True, 'sub': True, 'mul': True, 'div': True}
         self.inc_ptrns = {'reversed': True, 'mixed_unknowns': True}
         self.num_facts = 25
-        self.inc_timers = False
+        self.inc_timers = True
         self.inc_untimed = True
         self.timer_vals = [9, 6, 3]
         self.facts = FactsMaker().get_facts()
