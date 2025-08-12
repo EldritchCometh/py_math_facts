@@ -1,6 +1,7 @@
 app_data/*
 !/app_data/passhash
-test*
 __pycache__/
 env/
 venv/
+test*
+todo*
