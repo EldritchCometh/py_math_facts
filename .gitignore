@@ -1,5 +1,5 @@
-app_data/*
-!/app_data/passhash
+data/*
+!/data/passhash
 __pycache__/
 env/
 venv/
