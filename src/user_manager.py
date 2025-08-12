@@ -89,7 +89,7 @@ class UserManager:
     def _set_path_attributes(self, user_name: str) -> None:
 
         parent_dir = Path(__file__).resolve().parents[1]
-        self._save_dir = Path.joinpath(parent_dir, 'app_data')
+        self._save_dir = Path.joinpath(parent_dir, 'data')
         self._user_path = Path.joinpath(self._save_dir, f'{user_name}.pkl')
 
 
@@ -105,7 +105,7 @@ class UserManager:
     def get_saved_users() -> List[str]:
 
         parent_dir = Path(__file__).resolve().parents[1]
-        save_dir = Path.joinpath(parent_dir, 'app_data')
+        save_dir = Path.joinpath(parent_dir, 'data')
 
         if not save_dir.exists():
             return []

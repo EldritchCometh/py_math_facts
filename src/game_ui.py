@@ -5,7 +5,6 @@ from src.ready_screen import ReadyScreen
 from src.play_screen import PlayScreen
 
 
-
 class GameUI(tk.Toplevel):
 
 

@@ -295,7 +295,7 @@ class OptionsUI(tk.Toplevel):
         message = "Are you sure you want to reset your password?"
         if messagebox.askyesno("Reset Password", message=message):
             parent_dir = Path(__file__).resolve().parents[1]
-            save_dir = Path.joinpath(parent_dir, 'app_data')
+            save_dir = Path.joinpath(parent_dir, 'data')
             pass_path = Path.joinpath(save_dir, 'passhash')
             os.remove(pass_path)
             messagebox.showinfo("Password Reset", 

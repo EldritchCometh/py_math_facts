@@ -44,7 +44,7 @@ class PasswordUI(tk.Toplevel):
         self.option_add("*Dialog.msg.wrap", "char")
 
         parent_dir = Path(__file__).resolve().parents[1]
-        self._save_dir = Path.joinpath(parent_dir, 'app_data')
+        self._save_dir = Path.joinpath(parent_dir, 'data')
         self._pass_path = Path.joinpath(self._save_dir, f'passhash')
         
         self._default_passhash = PasswordUI._long_hash('mathfacts')
