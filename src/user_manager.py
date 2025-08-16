@@ -101,13 +101,10 @@ class UserManager:
         os.remove(self._user_path)
 
 
-    @staticmethod
-    def get_saved_users() -> List[str]:
+    def reset_password(self) -> None:
 
         parent_dir = Path(__file__).resolve().parents[1]
         save_dir = Path.joinpath(parent_dir, 'data')
-
-        if not save_dir.exists():
-            return []
-
-        return [f.stem for f in save_dir.glob('*.pkl') if f.is_file()]
+        pass_path = Path.joinpath(save_dir, 'passhash')
+        with open(pass_path, 'w') as f:
+            f.write("")

@@ -2,9 +2,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import font as tkfont
-import os
 import string
 from pathlib import Path
+
+from src.utils import sha256_hash
 
 
 
@@ -297,10 +298,11 @@ class OptionsUI(tk.Toplevel):
             parent_dir = Path(__file__).resolve().parents[1]
             save_dir = Path.joinpath(parent_dir, 'data')
             pass_path = Path.joinpath(save_dir, 'passhash')
-            os.remove(pass_path)
+            default_passhash = sha256_hash('mathfacts')
+            with open(pass_path, 'w') as f:
+                f.write(default_passhash)
             messagebox.showinfo("Password Reset", 
                                 "Your password has been reset.")
-            self.destroy()
 
 
     def _on_delete(self) -> None:

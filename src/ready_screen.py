@@ -60,12 +60,12 @@ class ReadyScreen(tk.Frame):
         target_width = self._start_message_frame.winfo_width()
         ratio = (target_width - small_width) / (large_width - small_width)
         w_size = small_font_size + ratio * (large_font_size - small_font_size)
-        w_size *= self.gui.winfo_fpixels('1i') / 96
+        w_size *= self.gui.winfo_fpixels('1i') / 96 * 0.95
 
         target_height = self._start_message_frame.winfo_height()
         ratio = (target_height - small_height) / (large_height - small_height)
         h_size = small_height + ratio * (large_height - small_height)
-        h_size *= self.gui.winfo_fpixels('1i') / 96 * 0.8
+        h_size *= self.gui.winfo_fpixels('1i') / 96 * 0.35
 
         final_size = min(int(w_size), int(h_size))
         self._font.configure(size=final_size)

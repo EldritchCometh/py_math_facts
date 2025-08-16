@@ -2,13 +2,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import font as tkfont
-import hashlib
-import base64
 import string
 import math
 from pathlib import Path
 
-from src.utils.common_passhashes import common_passhashes
+from src.utils import *
 
 
 
@@ -47,7 +45,7 @@ class PasswordUI(tk.Toplevel):
         self._save_dir = Path.joinpath(parent_dir, 'data')
         self._pass_path = Path.joinpath(self._save_dir, f'passhash')
         
-        self._default_passhash = PasswordUI._long_hash('mathfacts')
+        self._default_passhash = sha256_hash('mathfacts')
         self._passhash = self._load_passhash()
         self._pass_set = not self._passhash == self._default_passhash
 
@@ -149,7 +147,7 @@ class PasswordUI(tk.Toplevel):
             return
         self.password_entry.delete(0, tk.END)
         
-        hash_value = PasswordUI._long_hash(password)
+        hash_value = sha256_hash(password)
         
         if not hash_value == self._passhash:
             messagebox.showerror("Error", "Incorrect")
@@ -166,6 +164,7 @@ class PasswordUI(tk.Toplevel):
         if not password:
             return
         self.password_entry.delete(0, tk.END)
+        self.password_entry.focus_set()
 
         format_errs, strength_err = self._validate_password(password)
         if format_errs:
@@ -174,15 +173,11 @@ class PasswordUI(tk.Toplevel):
             messagebox.showinfo("Format Warning", message)
             self.password_entry.delete(0, tk.END)
             return
-        if strength_err:
+        if strength_err and not self._new_pass:
             message = strength_err + (
-                "\nTips for a strong, memorable password:\n"
-                "- Use camel-cased, alliterative nonsense words.\n"
-                "- Add a short, meaningful number sequence.\n"
-                "- Include one punctuation mark.\n"
-                "- Examples: 'MeanMrMustard42!', 'LizardLordLargess@67'")
-            messagebox.showwarning("Strength Warning", message)
-            return
+                "\nWould you like to continue with this password anyway?")
+            if not messagebox.askyesno("Weak Password", message):
+                return
 
         if self._new_pass and password != self._new_pass:
             messagebox.showerror("Error", "Entries did not match.")
@@ -197,7 +192,7 @@ class PasswordUI(tk.Toplevel):
             self._label_text.set("Retype Password:")
             return
         
-        hash_value = PasswordUI._long_hash(self._new_pass)
+        hash_value = sha256_hash(self._new_pass)
         with open(self._pass_path, 'w') as f:
             f.write(hash_value)
         
@@ -218,40 +213,15 @@ class PasswordUI(tk.Toplevel):
             format_errs.append("contain only letters, digits, underscores, \
                                and punctuation")      
 
-        strength_err = ''        
-        if PasswordUI._short_hash(password) in common_passhashes:
-            strength_err = "This is a very common password.\n"
-        elif not self.shannon_password_check(password):
-            strength_err = "This is a very weak password.\n"
-
+        strength_err = ""
+        err_msg = "This is a very weak password.\n"
+        if not shannon_password_check(password):
+            strength_err = err_msg
+        if not basic_password_check(password):
+            strength_err = err_msg
+        
         return format_errs, strength_err
         
 
-    @staticmethod
-    def shannon_password_check(password) -> bool:
-        
-        char_count = len(password)
-        freq = {}
-        for char in password:
-            freq[char] = freq.get(char, 0) + 1
-        entropy_per_char = 0
-        for count in freq.values():
-            prob = count / char_count
-            entropy_per_char -= prob * math.log2(prob)
-        total_entropy = entropy_per_char * char_count
-        return total_entropy > 20
     
 
-    @staticmethod
-    def _short_hash(password) -> str:
-
-        hex = PasswordUI._long_hash(password)
-        raw = bytes.fromhex(hex)
-        return base64.b64encode(raw).decode()[:6]
-
-
-    @staticmethod
-    def _long_hash(password) -> str:
-        
-        encoded = password.encode()
-        return hashlib.sha256(encoded).hexdigest()

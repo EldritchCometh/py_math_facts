@@ -97,7 +97,8 @@ class FactsManager:
 
         if not self._answered:
             self._answered = True
-            self._questions_answered += 1
+            if is_correct:
+                self._questions_answered += 1
             self._update_mastery(is_correct)
          
 
@@ -108,6 +109,7 @@ class FactsManager:
         mastery -= (not is_correct)
         mastery = max(0, min(mastery, self._mastered_threshold))
 
+        self._current_fact['mastery'] = mastery
         self._user.facts[self._current_fact['id']]['mastery'] = mastery
         self._user.save_user_data()
 
@@ -133,7 +135,7 @@ class FactsManager:
             if self._user.inc_untimed:
                 threshold += 1
             self._mastered_threshold = threshold
-        return fact['mastery'] >= self._mastered_threshold
+        return self._is_mastered(fact)
 
 
     @property
@@ -157,7 +159,9 @@ class FactsManager:
     @property
     def percent_mastered(self) -> float:
 
-        return len(self._mastered) / len(self._retained)
+        mastered = len(self._mastered) / len(self._retained)
+        print(len(self._mastered))
+        return mastered
         
 
     @property

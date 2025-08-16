@@ -7,6 +7,8 @@ import string
 from src.password_ui import PasswordUI
 from src.options_ui import OptionsUI
 
+from src.utils import get_saved_users
+
 
 
 class StartUI(tk.Toplevel):
@@ -85,7 +87,7 @@ class StartUI(tk.Toplevel):
         frame.pack(expand=True, fill='both', pady=self._pad)
 
         self._combobox = ttk.Combobox(
-            frame, values=self._user.get_saved_users(), state="normal", 
+            frame, values=get_saved_users(), state="normal", 
             font=self._small_font, textvariable=self._combobox_text)
         create_btn = ttk.Button(
             frame, text="Create", style='TButton', 
@@ -109,7 +111,7 @@ class StartUI(tk.Toplevel):
     def _on_start_clicked(self) -> None:
 
         cbbox_val = self._combobox.get()
-        if cbbox_val in self._user.get_saved_users():
+        if cbbox_val in get_saved_users():
                 self._user.load_saved_user(cbbox_val)
         else:
             return
@@ -132,13 +134,13 @@ class StartUI(tk.Toplevel):
 
         if PasswordUI().verify():
             self._user.create_new_user(cbbox_val)
-            self._combobox['values'] = self._user.get_saved_users()
+            self._combobox['values'] = get_saved_users()
 
 
     def _on_options_clicked(self) -> None:
 
         cbbox_val = self._combobox.get()
-        if cbbox_val in self._user.get_saved_users():
+        if cbbox_val in get_saved_users():
                 self._user.load_saved_user(cbbox_val)
         else:
             return
@@ -147,8 +149,9 @@ class StartUI(tk.Toplevel):
             options_ui = OptionsUI(self._user)
             self.wait_window(options_ui)
     
-        self._combobox['values'] = self._user.get_saved_users()
-        self._combobox_text.set("Select User")
+        self._combobox['values'] = get_saved_users()
+        if not cbbox_val in get_saved_users():
+            self._combobox_text.set("Select User")
         self._combobox.select_range(0, tk.END)
 
 
@@ -158,7 +161,7 @@ class StartUI(tk.Toplevel):
             return False, ["Username cannot be empty"]
         if cbbox_val.strip() == "Select User":
             return False, []
-        if cbbox_val in self._user.get_saved_users():
+        if cbbox_val in get_saved_users():
             return False, []
 
         errs = []
