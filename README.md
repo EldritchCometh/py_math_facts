@@ -18,4 +18,4 @@ MathFacts is an easy-to-use program to help learn basic math facts. It shows mat
 
 ## License
 
-This is free and unencumbered software released into the public domain.
+This is free and unencumbered software dedicated to the public domain.
