@@ -1,6 +1,6 @@
 
 import random
-from copy import copy
+from copy import deepcopy as copy
 from typing import Any, Dict, List, Tuple
 
 
@@ -68,23 +68,24 @@ class FactsManager:
         ratio = min(len(self._mastered) / len(self._unmastered), (1/3))
         if random.choices([True, False], weights=[ratio, 1], k=1)[0]:
             current_working_list = self._mastered
-            next_fact = copy(random.choice(current_working_list))
+            next_fact = random.choice(current_working_list)
         else:
             current_working_list = self._unmastered
-            next_fact = copy(random.choice(current_working_list[:20]))
+            next_fact = random.choice(current_working_list[:10])
 
         equation = list(next_fact['equation'])
         new_equation = list(next_fact['equation'])
         new_solution = int(next_fact['equation'][-1])
 
         if self._user.inc_ptrns['mixed_unknowns']:
-            idx = random.choices([0, 2, 4], weights=[0.25, 0.25, 0.5], k=1)[0]
-            new_equation[idx] = '_'
-            new_solution = int(equation[idx])
-
-        if self._user.inc_ptrns['reversed']:
-            if random.choice([True, False]):
-                new_equation = list(new_equation[-2:][::-1]) + new_equation[:-2]
+            idx = random.choices([0, 2, 4], weights=[2, 2, 3], k=1)[0]
+        else:
+            idx = 4
+        new_equation[idx] = '_'
+        new_solution = int(equation[idx])
+        
+        if self._user.inc_ptrns['reversed'] and random.choice([True, False]):
+            new_equation = list(new_equation[-2:][::-1]) + new_equation[:-2]
 
         self._answered = False
         self._current_fact = next_fact
@@ -115,13 +116,13 @@ class FactsManager:
 
         if self._is_mastered(self._current_fact):
             if self._current_working_list == self._unmastered:
-                self._current_working_list.remove(self._current_fact)
+                self._unmastered.remove(self._current_fact)
                 self._mastered.append(self._current_fact)
         if not self._is_mastered(self._current_fact):
             if self._current_working_list == self._mastered:
-                self._current_working_list.remove(self._current_fact)
+                self._mastered.remove(self._current_fact)
                 self._unmastered.insert(0, self._current_fact)
-
+        
 
     def _is_mastered(self, fact: Dict[str, Any]) -> bool:
 
@@ -160,7 +161,6 @@ class FactsManager:
     def percent_mastered(self) -> float:
 
         mastered = len(self._mastered) / len(self._retained)
-        print(len(self._mastered))
         return mastered
         
 

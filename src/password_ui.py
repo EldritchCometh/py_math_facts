@@ -212,6 +212,8 @@ class PasswordUI(tk.Toplevel):
         if not all(c in whitelist for c in password):
             format_errs.append("contain only letters, digits, underscores, \
                                and punctuation")      
+        if password == 'mathfacts':
+            format_errs.append("not be 'mathfacts'")
 
         strength_err = ""
         err_msg = "This is a very weak password.\n"
